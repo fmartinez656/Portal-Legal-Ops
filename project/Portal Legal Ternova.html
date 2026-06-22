@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light" data-density="default">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Portal Legal · Ternova</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.7.0/dist/tabler-icons.min.css">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- ═══════════ LOGIN ═══════════ -->
+<div id="ls">
+  <div class="lwrap">
+    <div class="lhero">
+      <div class="lhero-mark">
+        <span class="wm" style="color:#fff;font-size:22px"><span class="wm-bar"></span>Ternova</span>
+      </div>
+      <div class="lhero-tag">Portal de servicios Legales · Autoservicio corporativo</div>
+      <h1>Todo lo legal,<br>en un solo lugar.</h1>
+      <p>Documentos, plantillas y servicios del equipo legal — disponibles cuando los necesitas, con trazabilidad completa.</p>
+      <div class="lhero-stats">
+        <div class="lhero-stat"><b>6</b><span>áreas legales</span></div>
+        <div class="lhero-stat"><b>29</b><span>servicios</span></div>
+        <div class="lhero-stat"><b>5</b><span>jurisdicciones</span></div>
+      </div>
+    </div>
+    <div class="lform">
+      <div class="lform-h">Iniciar sesión</div>
+      <div class="lform-s">Ingresa con tu cuenta corporativa para continuar.</div>
+      <div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);margin-bottom:.6rem">Ingresa como</div>
+      <div class="lroles" role="radiogroup" aria-label="Selecciona tu rol">
+        <button class="rb" role="radio" aria-checked="false" onclick="selRole(this,'req')">
+          <span class="rb-check"></span><i class="ti ti-user"></i><span>Solicitante</span><small>Pide servicios legales</small></button>
+        <button class="rb" role="radio" aria-checked="false" onclick="selRole(this,'law')">
+          <span class="rb-check"></span><i class="ti ti-scale"></i><span>Abogado</span><small>Atiende solicitudes</small></button>
+        <button class="rb" role="radio" aria-checked="false" onclick="selRole(this,'mgr')">
+          <span class="rb-check"></span><i class="ti ti-briefcase"></i><span>Gerente legal</span><small>Supervisa y asigna</small></button>
+        <button class="rb" role="radio" aria-checked="false" onclick="selRole(this,'adm')">
+          <span class="rb-check"></span><i class="ti ti-settings"></i><span>Admin</span><small>Acceso total</small></button>
+      </div>
+      <button class="lbtn" id="lbtn" disabled onclick="doLogin()">
+        <i class="ti ti-brand-windows"></i> Continuar con Microsoft 365</button>
+      <div class="lnote"><i class="ti ti-lock"></i> Acceso restringido a @ternova.group</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ TOPBAR ═══════════ -->
+<header class="topbar" id="topbar" style="display:none">
+  <div class="brand">
+    <span class="wm"><span class="wm-bar"></span>Ternova</span>
+    <span class="brand-sub">Legal</span>
+  </div>
+  <div class="srch">
+    <i class="ti ti-search"></i>
+    <input type="text" placeholder="Buscar servicios, documentos, expedientes…" onkeydown="if(event.key==='Enter')toast('Buscando: '+this.value)">
+  </div>
+  <div class="tbr">
+    <button class="ib" data-cap="sla" aria-label="Alertas" onclick="nav('sla')"><i class="ti ti-bell"></i><span class="ndot"></span></button>
+    <button class="ib" aria-label="Ayuda" onclick="toast('Centro de ayuda — próximamente')"><i class="ti ti-help"></i></button>
+    <div class="usr" onclick="logout()" title="Cerrar sesión">
+      <span class="av" id="uAv">CR</span>
+      <span class="usr-meta"><span class="usr-nm" id="uName">Usuario</span><span class="rtag" id="uRole">Rol</span></span>
+      <i class="ti ti-chevron-down" style="font-size:14px;color:var(--mut)"></i>
+    </div>
+  </div>
+</header>
+
+<!-- ═══════════ SHELL ═══════════ -->
+<div class="shell" id="shell" style="display:none">
+  <!-- SIDEBAR -->
+  <nav class="sidebar">
+    <div class="sb-s">
+      <div class="sb-l">General</div>
+      <a class="ni" data-nav="home" onclick="nav('home')"><i class="ti ti-layout-grid"></i>Inicio</a>
+      <a class="ni" data-nav="reqs" onclick="nav('reqs')"><i class="ti ti-file-stack"></i>Mis solicitudes</a>
+      <a class="ni" data-nav="sla" data-cap="sla" onclick="nav('sla')"><i class="ti ti-bell"></i>Alertas SLA</a>
+    </div>
+    <div class="sb-s">
+      <div class="sb-l">Áreas legales</div>
+      <a class="ni" data-nav="area-risk" onclick="nav('area','risk')"><span class="nd2" style="background:var(--cr)"></span>Riesgo y compliance</a>
+      <a class="ni" data-nav="area-adv" onclick="nav('area','adv')"><span class="nd2" style="background:var(--ca)"></span>Asesoría legal</a>
+      <a class="ni" data-nav="area-tx" onclick="nav('area','tx')"><span class="nd2" style="background:var(--ct)"></span>Transacciones</a>
+      <a class="ni" data-nav="area-lit" onclick="nav('area','lit')"><span class="nd2" style="background:var(--cl)"></span>Litigio y arbitraje</a>
+      <a class="ni" data-nav="area-edu" onclick="nav('area','edu')"><span class="nd2" style="background:var(--ce)"></span>Educación legal</a>
+      <a class="ni" data-nav="area-gov" onclick="nav('area','gov')"><span class="nd2" style="background:var(--cg)"></span>Governance</a>
+    </div>
+    <div class="sb-s" data-cap="inbox dash history audit">
+      <div class="sb-div"></div>
+      <div class="sb-l">Equipo legal</div>
+      <a class="ni" data-nav="inbox" data-cap="inbox" onclick="nav('inbox')"><i class="ti ti-inbox"></i><span class="ni-lbl">Bandeja del equipo</span></a>
+      <a class="ni" data-nav="dash" data-cap="dash" onclick="nav('dash')"><i class="ti ti-chart-histogram"></i><span class="ni-lbl">Tableros</span></a>
+      <a class="ni" data-nav="history" data-cap="history" onclick="nav('history')"><i class="ti ti-versions"></i><span class="ni-lbl">Historial de cambios</span></a>
+      <a class="ni" data-nav="audit" data-cap="audit" onclick="nav('audit')"><i class="ti ti-history"></i><span class="ni-lbl">Auditoría</span></a>
+    </div>
+    <div class="sb-s" data-cap="admin">
+      <div class="sb-div"></div>
+      <div class="sb-l">Administración</div>
+      <a class="ni" data-nav="admin" data-cap="admin" onclick="nav('admin')"><i class="ti ti-settings"></i><span class="ni-lbl">Administración</span></a>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- HOME -->
+    <section class="vw" id="v-home">
+      <div style="margin-bottom:1.75rem">
+        <div class="eyebrow">Portal Legal</div>
+        <h1 class="ptitle">Bienvenido al portal <em>legal</em>.</h1>
+        <p class="psub">Resuelve por autoservicio lo que puedas, solicita al equipo legal lo que necesite criterio jurídico. Todo con SLA claro y trazabilidad.</p>
+      </div>
+
+      <div id="homeNote"></div>
+      <div class="krow" id="homeKpis"></div>
+
+      <div class="sh"><h2>Áreas legales</h2><span>Elige un área para ver autoservicio y servicios con abogado</span></div>
+      <div class="agrid" id="areaGrid"></div>
+    </section>
+
+    <!-- ÁREA (dinámica) -->
+    <section class="vw" id="v-area"></section>
+
+    <!-- MIS SOLICITUDES -->
+    <section class="vw" id="v-reqs">
+      <div style="margin-bottom:1.5rem">
+        <div class="eyebrow">Seguimiento</div>
+        <h1 class="ptitle">Mis solicitudes</h1>
+        <p class="psub">Historial completo de tus solicitudes al equipo legal, con responsable y estado de SLA.</p>
+      </div>
+      <div id="reqsNote"></div>
+      <div class="rtable-wrap">
+        <div class="rtoolbar">
+          <h3>Historial</h3>
+          <div id="reqFilters" style="display:flex;gap:6px;flex-wrap:wrap">
+            <button class="fchip on" onclick="fReq(this,'all')">Todas</button>
+            <button class="fchip" onclick="fReq(this,'rev')">En revisión</button>
+            <button class="fchip" onclick="fReq(this,'recv')">Recibidas</button>
+            <button class="fchip" onclick="fReq(this,'done')">Entregadas</button>
+            <button class="fchip" onclick="fReq(this,'urg')">Urgentes</button>
+          </div>
+        </div>
+        <div style="overflow-x:auto">
+          <table class="rt">
+            <thead><tr><th>Folio</th><th>Servicio</th><th>Fecha</th><th>Responsable</th><th>Estado</th><th>SLA</th></tr></thead>
+            <tbody id="reqBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ALERTAS SLA -->
+    <section class="vw" id="v-sla">
+      <div style="margin-bottom:1.5rem">
+        <div class="eyebrow">Vencimientos</div>
+        <h1 class="ptitle">Alertas SLA</h1>
+        <p class="psub">Vencimientos contractuales y regulatorios próximos. Actúa antes de que escalen.</p>
+      </div>
+      <div class="alert-banner"><i class="ti ti-alert-triangle"></i>2 alertas regulatorias requieren acción esta semana en GT y MX.</div>
+      <div class="sla-cards">
+        <div class="slac slac-30"><div class="slac-v">4</div><div class="slac-l">Vencen en ≤ 30 días</div></div>
+        <div class="slac slac-60"><div class="slac-v">7</div><div class="slac-l">Vencen en 31–60 días</div></div>
+        <div class="slac slac-90"><div class="slac-v">11</div><div class="slac-l">Vencen en 61–90 días</div></div>
+      </div>
+      <div class="sh"><h2>Próximos vencimientos</h2></div>
+      <div class="rtable-wrap">
+        <div style="overflow-x:auto">
+          <table class="rt">
+            <thead><tr><th>Tipo</th><th>Detalle</th><th>Jurisdicción</th><th>Vence</th><th>Estado</th></tr></thead>
+            <tbody>
+              <tr><td style="font-weight:600">Regulatorio</td><td>Renovación de licencia de operación</td><td>Guatemala</td><td style="white-space:nowrap">10 Jun 2026</td><td><span class="stpill s-urg"><i class="ti ti-alert-triangle"></i>Crítico</span></td></tr>
+              <tr><td style="font-weight:600">Regulatorio</td><td>Declaración de protección de datos (RGPD-MX)</td><td>México</td><td style="white-space:nowrap">14 Jun 2026</td><td><span class="stpill s-urg"><i class="ti ti-alert-triangle"></i>Crítico</span></td></tr>
+              <tr><td style="font-weight:600">Contractual</td><td>Vencimiento contrato de arrendamiento sede</td><td>Costa Rica</td><td style="white-space:nowrap">22 Jun 2026</td><td><span class="stpill s-rev"><i class="ti ti-clock"></i>Por revisar</span></td></tr>
+              <tr><td style="font-weight:600">Contractual</td><td>Renovación de NDA con proveedor TI</td><td>El Salvador</td><td style="white-space:nowrap">28 Jun 2026</td><td><span class="stpill s-rev"><i class="ti ti-clock"></i>Por revisar</span></td></tr>
+              <tr><td style="font-weight:600">Litigio</td><td>Plazo de contestación EXP-2026-012</td><td>Honduras</td><td style="white-space:nowrap">05 Jul 2026</td><td><span class="stpill s-recv"><i class="ti ti-inbox"></i>Asignado</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- BANDEJA EQUIPO (dinámica por rol) -->
+    <section class="vw" id="v-inbox"></section>
+
+    <!-- TABLEROS (dinámica) -->
+    <section class="vw" id="v-dash"></section>
+
+    <!-- HISTORIAL DE CAMBIOS (dinámica) -->
+    <section class="vw" id="v-history"></section>
+
+    <!-- ADMINISTRACIÓN (dinámica) -->
+    <section class="vw" id="v-admin"></section>
+
+    <!-- AUDITORÍA -->
+    <section class="vw" id="v-audit">
+      <div style="margin-bottom:1.5rem">
+        <div class="eyebrow">Trazabilidad</div>
+        <h1 class="ptitle">Registro de auditoría</h1>
+        <p class="psub">Bitácora inmutable de acciones sobre solicitudes, documentos y aprobaciones.</p>
+      </div>
+      <div class="audit-wrap">
+        <div class="audit-row"><span class="audit-dot" style="background:var(--ce)"></span><div><div class="audit-evt">A. Salgado cambió SOL-2026-238 a “En revisión”</div><div class="audit-meta">Hoy · 09:42 · IP 10.4.2.18</div></div></div>
+        <div class="audit-row"><span class="audit-dot" style="background:var(--ca)"></span><div><div class="audit-evt">C. Ríos creó solicitud SOL-2026-241 (03.1)</div><div class="audit-meta">Hoy · 08:15 · Comercial</div></div></div>
+        <div class="audit-row"><span class="audit-dot" style="background:var(--ct)"></span><div><div class="audit-evt">L. Mendoza descargó plantilla NDA-STD-v2</div><div class="audit-meta">Ayer · 17:30 · Legal</div></div></div>
+        <div class="audit-row"><span class="audit-dot" style="background:var(--cg)"></span><div><div class="audit-evt">Ana Salgado aprobó acta del Comité de Riesgos — May 2026</div><div class="audit-meta">Ayer · 16:05 · Governance</div></div></div>
+        <div class="audit-row"><span class="audit-dot" style="background:var(--ce)"></span><div><div class="audit-evt">D. Paz entregó SOL-2026-210 (01.5)</div><div class="audit-meta">28 May · 14:22 · Compliance</div></div></div>
+        <div class="audit-row"><span class="audit-dot" style="background:var(--cr)"></span><div><div class="audit-evt">R. Castro escaló SOL-2026-229 (04.4) a urgente</div><div class="audit-meta">27 May · 11:48 · Litigio</div></div></div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- MODAL -->
+<div class="modal-bg" id="mBg">
+  <div class="modal" role="dialog" aria-modal="true"><div id="mBody"></div></div>
+</div>
+
+<!-- TABBAR MÓVIL -->
+<nav class="mtab" id="mtab" style="display:none">
+  <a data-nav="home" class="on" onclick="nav('home')"><i class="ti ti-layout-grid"></i>Inicio</a>
+  <a data-nav="reqs" onclick="nav('reqs')"><i class="ti ti-file-stack"></i>Solicitudes</a>
+  <a data-nav="sla" data-cap="sla" style="display:none" onclick="nav('sla')"><i class="ti ti-bell"></i>Alertas</a>
+  <a data-nav="inbox" data-cap="inbox" style="display:none" onclick="nav('inbox')"><i class="ti ti-inbox"></i>Bandeja</a>
+  <a data-nav="dash" data-cap="dash" style="display:none" onclick="nav('dash')"><i class="ti ti-chart-histogram"></i>Tableros</a>
+  <a data-nav="admin" data-cap="admin" style="display:none" onclick="nav('admin')"><i class="ti ti-settings"></i>Admin</a>
+</nav>
+
+<!-- Tweaks -->
+<div id="tweaks-root"></div>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+<script src="views.js"></script>
+
+<!-- React + Babel para el panel de Tweaks -->
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+<script type="text/babel" src="tweaks.jsx"></script>
+</body>
+</html>
