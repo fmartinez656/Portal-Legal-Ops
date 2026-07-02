@@ -174,7 +174,7 @@ function buildAreaCards() {
     return `<article class="ac ac-${a.cls}" tabindex="0" role="button" onclick="nav('area','${k}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();nav('area','${k}')}">
       <div class="ac-top">
         <div class="aicon"><i class="ti ${a.icon}"></i></div>
-        <span class="abadge">0${order.indexOf(k) + 1}</span>
+        <span class="abadge">§ 0${order.indexOf(k) + 1}</span>
       </div>
       <h3 class="atitle">${a.title}</h3>
       <p class="adesc">${AREA_DESC[k]}</p>
