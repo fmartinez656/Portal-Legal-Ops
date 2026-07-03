@@ -52,7 +52,9 @@ function selRole(el, role) {
   el.setAttribute('aria-checked', 'true');
   $$('.rb').forEach(b => { if (b !== el) b.setAttribute('aria-checked', 'false'); });
   state.role = role;
-  $('#lbtn').disabled = false;
+  const b = $('#lbtn');
+  b.disabled = false;
+  b.classList.remove('armed'); void b.offsetWidth; b.classList.add('armed');   // pulso hacia el siguiente paso
 }
 
 function doLogin() {
@@ -67,8 +69,11 @@ function doLogin() {
   const av = $('#uAv'); av.textContent = initials(nm); av.style.background = r.color;
   // permisos de navegación según rol
   applyPerms();
-  // transición
+  // transición inmersiva login → portal (barrido de marca que enmascara el cambio)
   $('#ls').classList.add('hide');
+  const fx = $('#enterFx');
+  if (fx) { fx.classList.remove('sweep'); void fx.offsetWidth; fx.classList.add('sweep');
+    setTimeout(() => fx.classList.remove('sweep'), 1000); }
   setTimeout(() => {
     $('#ls').style.display = 'none';
     $('#topbar').style.display = '';
@@ -77,7 +82,61 @@ function doLogin() {
     buildAreaCards();
     buildHome();
     nav('home');
-  }, 450);
+  }, 480);
+}
+
+/* ───────── TEMA CLARO / OSCURO ───────── */
+function toggleTheme() {
+  const root = document.documentElement;
+  const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  root.setAttribute('data-theme-anim', '');            // activa la transición de color
+  root.setAttribute('data-theme', next);
+  try { localStorage.setItem('tv-theme', next); } catch (e) {}
+  clearTimeout(toggleTheme._t);
+  toggleTheme._t = setTimeout(() => root.removeAttribute('data-theme-anim'), 340);
+}
+
+/* ───────── SPLASH DE MARCA (una vez por sesión) ───────── */
+function dismissSplash(fast) {
+  const s = $('#splash');
+  if (!s || s.dataset.done) return;
+  s.dataset.done = '1';
+  if (fast) s.classList.add('skip');
+  setTimeout(() => s.remove(), fast ? 460 : 120);
+}
+(function initSplash() {
+  const s = document.getElementById('splash');
+  if (!s) return;
+  if (document.documentElement.getAttribute('data-splash') === 'skip') { s.remove(); return; }
+  try { sessionStorage.setItem('tv-splash', '1'); } catch (e) {}
+  s.addEventListener('click', () => dismissSplash(true));
+  window.addEventListener('keydown', () => dismissSplash(true), { once: true });
+  setTimeout(() => dismissSplash(false), 2720);        // tras la animación CSS
+})();
+
+/* ───────── COUNT-UP DE MÉTRICAS ───────── */
+function animateCounts() {
+  if (window.matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+  const scope = $('.vw.on');
+  if (!scope) return;
+  $$('.kpi-v,.lcard-v,.slac-v,.donut-v', scope).forEach(el => {
+    if (el.dataset.counted) return;
+    const raw = el.textContent.trim();
+    const m = raw.match(/^(\D*)(\d[\d,]*\.?\d*)(.*)$/s);
+    if (!m) return;
+    const pre = m[1], numStr = m[2].replace(/,/g, ''), suf = m[3];
+    const target = parseFloat(numStr);
+    if (isNaN(target)) return;
+    const decimals = (numStr.split('.')[1] || '').length;
+    el.dataset.counted = '1';
+    const dur = 620, t0 = performance.now();
+    (function tick(t) {
+      const p = Math.min(1, (t - t0) / dur);
+      const val = target * (1 - Math.pow(1 - p, 3));
+      el.textContent = pre + (decimals ? val.toFixed(decimals) : Math.round(val).toLocaleString('es')) + suf;
+      if (p < 1) requestAnimationFrame(tick); else el.textContent = raw;
+    })(t0);
+  });
 }
 
 /* Muestra/oculta navegación y secciones según las capacidades del rol */
@@ -127,6 +186,8 @@ function nav(view, area) {
   // scroll arriba del main
   const main = $('.main'); if (main) main.scrollTop = 0;
   window.scrollTo({ top: 0 });
+
+  requestAnimationFrame(animateCounts);
 }
 
 /* ───────── HOME: tarjetas de área ───────── */

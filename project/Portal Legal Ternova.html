@@ -6,11 +6,31 @@
 <title>Portal Legal · Ternova</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..600;1,9..144,400..600&family=IBM+Plex+Mono:wght@400;500;600&family=Libre+Franklin:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.7.0/dist/tabler-icons.min.css">
 <link rel="stylesheet" href="styles.css">
+<script>
+/* Fija tema y flag de splash antes del primer pintado (evita parpadeo) */
+(function(){try{
+  var t=localStorage.getItem('tv-theme');
+  if(t==='dark'||t==='light')document.documentElement.setAttribute('data-theme',t);
+  if(sessionStorage.getItem('tv-splash')==='1')document.documentElement.setAttribute('data-splash','skip');
+}catch(e){}})();
+</script>
 </head>
 <body>
+
+<!-- ═══════════ SPLASH DE MARCA ═══════════ -->
+<div id="splash" aria-hidden="true">
+  <div class="sp-stage">
+    <div class="sp-mark"><span class="sp-seal"></span><span class="sp-word">TERNOVA</span></div>
+    <div class="sp-rule"></div>
+    <div class="sp-tag">Portal Legal</div>
+  </div>
+</div>
+
+<!-- ═══════════ BARRIDO DE ENTRADA AL PORTAL ═══════════ -->
+<div id="enterFx" aria-hidden="true"></div>
 
 <!-- ═══════════ LOGIN ═══════════ -->
 <div id="ls">
@@ -34,13 +54,13 @@
       <div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);margin-bottom:.6rem">Ingresa como</div>
       <div class="lroles" role="radiogroup" aria-label="Selecciona tu rol">
         <button class="rb" role="radio" aria-checked="false" onclick="selRole(this,'req')">
-          <span class="rb-check"></span><i class="ti ti-user"></i><span>Solicitante</span><small>Pide servicios legales</small></button>
+          <i class="ti ti-user"></i><span>Solicitante</span><small>Pide servicios legales</small></button>
         <button class="rb" role="radio" aria-checked="false" onclick="selRole(this,'law')">
-          <span class="rb-check"></span><i class="ti ti-scale"></i><span>Abogado</span><small>Atiende solicitudes</small></button>
+          <i class="ti ti-scale"></i><span>Abogado</span><small>Atiende solicitudes</small></button>
         <button class="rb" role="radio" aria-checked="false" onclick="selRole(this,'mgr')">
-          <span class="rb-check"></span><i class="ti ti-briefcase"></i><span>Gerente legal</span><small>Supervisa y asigna</small></button>
+          <i class="ti ti-briefcase"></i><span>Gerente legal</span><small>Supervisa y asigna</small></button>
         <button class="rb" role="radio" aria-checked="false" onclick="selRole(this,'adm')">
-          <span class="rb-check"></span><i class="ti ti-settings"></i><span>Admin</span><small>Acceso total</small></button>
+          <i class="ti ti-settings"></i><span>Admin</span><small>Acceso total</small></button>
       </div>
       <button class="lbtn" id="lbtn" disabled onclick="doLogin()">
         <i class="ti ti-brand-windows"></i> Continuar con Microsoft 365</button>
@@ -60,6 +80,7 @@
     <input type="text" placeholder="Buscar servicios, documentos, expedientes…" onkeydown="if(event.key==='Enter')toast('Buscando: '+this.value)">
   </div>
   <div class="tbr">
+    <button class="ib theme-btn" aria-label="Cambiar tema claro/oscuro" onclick="toggleTheme()"><i class="ti ti-sun"></i><i class="ti ti-moon"></i></button>
     <button class="ib" data-cap="sla" aria-label="Alertas" onclick="nav('sla')"><i class="ti ti-bell"></i><span class="ndot"></span></button>
     <button class="ib" aria-label="Ayuda" onclick="toast('Centro de ayuda — próximamente')"><i class="ti ti-help"></i></button>
     <div class="usr" onclick="logout()" title="Cerrar sesión">
