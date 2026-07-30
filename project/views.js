@@ -7,13 +7,17 @@
 /* ───────── TABLEROS ───────── */
 function renderDash() {
   const host = $('#v-dash');
-  const maxArea = Math.max(...DASH.byArea.map(a => a.n));
+  const maxMacro = Math.max(...DASH.byMacro.map(a => a.n));
+  const totalMacro = DASH.byMacro.reduce((s, x) => s + x.n, 0);
+  const maxProc = Math.max(...DASH.byProcess.map(p => p.n));
+  const totalProc = DASH.byProcess.reduce((s, x) => s + x.n, 0);
+  const maxOrg = Math.max(...DASH.byOrg.map(o => o.n));
+  const totalOrg = DASH.byOrg.reduce((s, x) => s + x.n, 0);
   const maxTrend = Math.max(...DASH.trend.map(t => t.n));
   const totalStatus = DASH.byStatus.reduce((s, x) => s + x.n, 0);
 
   host.innerHTML = `
     <div style="margin-bottom:1.5rem">
-      <div class="eyebrow">Indicadores</div>
       <h1 class="ptitle">Tableros</h1>
       <p class="psub">Datos relevantes del portal para seguimiento de la operación legal. Visible para Gerente legal y Admin.</p>
     </div>
@@ -28,10 +32,10 @@ function renderDash() {
 
     <div class="dash-grid">
       <div class="chart-card">
-        <div class="chart-h"><h3>Solicitudes por área</h3><span>Últimos 90 días</span></div>
+        <div class="chart-h"><h3>Solicitudes por macroproceso legal</h3><span>${totalMacro} · últimos 90 días</span></div>
         <div class="vbars">
-          ${DASH.byArea.map(a => `<div class="vbar">
-            <div class="vbar-track"><div class="vbar-fill bar-${a.cls}" style="height:${Math.round(a.n / maxArea * 100)}%"><span class="vbar-n">${a.n}</span></div></div>
+          ${DASH.byMacro.map(a => `<div class="vbar">
+            <div class="vbar-track"><div class="vbar-fill bar-${a.cls}" style="height:${Math.round(a.n / maxMacro * 100)}%"><span class="vbar-n">${a.n}</span></div></div>
             <div class="vbar-l">${a.label}</div>
           </div>`).join('')}
         </div>
@@ -45,6 +49,30 @@ function renderDash() {
             ${DASH.byStatus.map(s => `<div class="legend-row"><span class="legend-dot" style="background:${s.color}"></span>${s.label}<b>${s.n}</b></div>`).join('')}
           </div>
         </div>
+      </div>
+    </div>
+
+    <div class="chart-card" style="margin-bottom:var(--gap)">
+      <div class="chart-h"><h3>Solicitudes por proceso</h3><span>${totalProc} · desglose dentro de cada macroproceso</span></div>
+      <div class="org-grid">
+        ${DASH.byProcess.map(p => `<div class="hbar">
+          <div class="hbar-l wide">${p.label}<span class="hbar-sub">${p.macro}</span></div>
+          <div class="hbar-track"><div class="hbar-fill" style="background:${p.color};width:${Math.round(p.n / maxProc * 100)}%"></div></div>
+          <div class="hbar-v">${p.n}</div>
+          <div class="hbar-p">${Math.round(p.n / totalProc * 100)}%</div>
+        </div>`).join('')}
+      </div>
+    </div>
+
+    <div class="chart-card" style="margin-bottom:var(--gap)">
+      <div class="chart-h"><h3>Solicitudes por área operativa</h3><span>${totalOrg} · quién demanda servicios legales</span></div>
+      <div class="org-grid">
+        ${DASH.byOrg.map(o => `<div class="hbar">
+          <div class="hbar-l wide">${o.label}</div>
+          <div class="hbar-track"><div class="hbar-fill" style="background:${o.color};width:${Math.round(o.n / maxOrg * 100)}%"></div></div>
+          <div class="hbar-v">${o.n}</div>
+          <div class="hbar-p">${Math.round(o.n / totalOrg * 100)}%</div>
+        </div>`).join('')}
       </div>
     </div>
 
@@ -109,7 +137,6 @@ function renderHistory() {
   const host = $('#v-history');
   host.innerHTML = `
     <div style="margin-bottom:1.5rem">
-      <div class="eyebrow">Trazabilidad documental</div>
       <h1 class="ptitle">Historial de cambios</h1>
       <p class="psub">Registro de todas las altas, actualizaciones y eliminaciones de documentación del portal, con autor y fecha.</p>
     </div>
@@ -145,7 +172,6 @@ function renderAdmin(tab) {
   const host = $('#v-admin');
   host.innerHTML = `
     <div style="margin-bottom:1.5rem">
-      <div class="eyebrow">Administración</div>
       <h1 class="ptitle">Administración del portal</h1>
       <p class="psub">Gestión de usuarios y roles, catálogo de servicios con sus SLA, y configuración general del portal. Acceso exclusivo de Admin.</p>
     </div>
@@ -168,26 +194,36 @@ function renderAdminTab(tab) {
 }
 
 function adminUsers() {
-  const rows = USERS.map(u => {
+  const rows = USERS.map((u, i) => {
     const r = ROLES[u.role];
+    const roleLabel = u.title || r.short;
     return `<tr>
       <td><span class="who-chip"><span class="av" style="width:26px;height:26px;font-size:10px;background:${r.color}">${initials(u.name)}</span>${u.name}</span></td>
       <td style="color:var(--mut)">${u.email}</td>
-      <td><span class="rtag" style="background:color-mix(in srgb,${r.color} 16%,transparent);color:${r.color}">${r.short}</span></td>
+      <td><span class="rtag" style="background:color-mix(in srgb,${r.color} 16%,transparent);color:${r.color}">${roleLabel}</span></td>
       <td style="color:var(--mut)">${u.area}</td>
+      <td style="text-align:center"><label class="toggle" title="Miembro de la Junta Directiva"><input type="checkbox" ${u.junta ? 'checked' : ''} onchange="toggleJunta(${i}, event.target.checked)"><span class="toggle-track"></span></label></td>
       <td><span class="stpill ${u.st === 'on' ? 's-done' : 's-urg'}"><i class="ti ti-point-filled"></i>${u.st === 'on' ? 'Activo' : 'Inactivo'}</span></td>
       <td style="color:var(--mut);white-space:nowrap">${u.last}</td>
-      <td><button class="mini-btn" onclick="toast('Editar rol de ${u.name.split(' ')[0]} — demo')"><i class="ti ti-pencil"></i>Editar</button></td>
     </tr>`;
   }).join('');
+  const juntaCount = USERS.filter(u => u.junta).length;
   return `<div class="admin-toolbar">
-      <div><b>${USERS.length}</b> usuarios · <b>${USERS.filter(u => u.st === 'on').length}</b> activos</div>
+      <div><b>${USERS.length}</b> usuarios · <b>${USERS.filter(u => u.st === 'on').length}</b> activos · <b>${juntaCount}</b> en la Junta Directiva</div>
       <button class="mini-btn primary" onclick="toast('Invitar usuario — demo')"><i class="ti ti-user-plus"></i>Invitar usuario</button>
     </div>
+    <div class="info-banner" style="margin-bottom:1rem"><i class="ti ti-building-bank"></i><span>La columna <strong>Junta</strong> autoriza el acceso a Actas y Comités. Se sincroniza con el grupo “Junta Directiva” de Microsoft 365; el CEO y la Gerente Legal la tienen siempre.</span></div>
     <div class="rtable-wrap"><div style="overflow-x:auto"><table class="rt">
-      <thead><tr><th>Usuario</th><th>Correo</th><th>Rol</th><th>Área</th><th>Estado</th><th>Último acceso</th><th></th></tr></thead>
+      <thead><tr><th>Usuario</th><th>Correo</th><th>Rol</th><th>Área</th><th style="text-align:center">Junta</th><th>Estado</th><th>Último acceso</th></tr></thead>
       <tbody>${rows}</tbody>
     </table></div></div>`;
+}
+
+/* Alterna el atributo de Junta Directiva de un usuario (Admin) */
+function toggleJunta(i, on) {
+  if (!USERS[i]) return;
+  USERS[i].junta = on;
+  toast(`${USERS[i].name.split(' ')[0]} ${on ? 'agregado a' : 'removido de'} la Junta Directiva`);
 }
 
 function adminCatalog() {
@@ -242,5 +278,18 @@ function adminConfig() {
       </div>`).join('')}</div>
     </div>`;
 
-  return `<div class="cfg-grid">${juris}${integ}</div>${matrix}`;
+  const board = USERS.filter(u => u.junta);
+  const boardCard = `<div class="cfg-card">
+      <div class="cfg-h"><i class="ti ti-building-bank"></i><h3>Grupo “Junta Directiva”</h3></div>
+      <p class="cfg-sub">Correos con acceso a Actas y Comités. Sincronizado desde Microsoft 365; el acceso se concede al iniciar sesión comparando el correo contra esta lista.</p>
+      <div class="board-list">${board.map(u => `<div class="board-row">
+        <span class="board-ic"><i class="ti ti-user-check"></i></span>
+        <div class="board-info"><div class="board-name">${u.name}${u.title ? ` · ${u.title}` : ''}</div><div class="board-email">${u.email}</div></div>
+        <button class="board-x" title="Quitar de la Junta" onclick="toast('Se gestiona desde Usuarios o el grupo de Microsoft 365')"><i class="ti ti-x"></i></button>
+      </div>`).join('')}
+        <div class="board-note"><i class="ti ti-info-circle"></i>La Gerente Legal y el CEO tienen acceso garantizado aunque no figuren en el grupo.</div>
+      </div>
+    </div>`;
+
+  return `<div class="cfg-grid">${boardCard}${juris}</div><div class="cfg-grid">${integ}</div>${matrix}`;
 }

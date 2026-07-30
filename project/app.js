@@ -12,23 +12,33 @@ const ROLES = {
   adm:  { name: 'Admin',           short: 'Admin',        team: true,  color: '#B5780A' },
 };
 const NAMES = { req: 'Camila Ríos', law: 'Luis Mendoza', mgr: 'Ana Salgado', adm: 'Diego Paz' };
+/* Correo corporativo con el que inicia sesión cada perfil de demo */
+const EMAILS = { req: 'c.rios@ternova.group', law: 'l.mendoza@ternova.group', mgr: 'a.salgado@ternova.group', adm: 'd.paz@ternova.group' };
 const abbr = (n) => n.replace(/^(\w)\w+\s/, '$1. ');
+
+/* Lista de correos autorizados de la Junta Directiva.
+   Fuente de verdad = grupo "Junta Directiva" de Microsoft 365. En este prototipo
+   se deriva de la columna Junta de Administración → Usuarios (USERS[].junta). */
+function boardEmails() { return USERS.filter(u => u.junta).map(u => u.email); }
+function isBoardEmail(email) { return !!email && boardEmails().includes(email.toLowerCase()); }
 
 /* Capacidades por rol — fuente única de verdad del modelo de permisos */
 const CAPS = {
   req: [],
-  law: ['sla', 'inbox', 'inboxOwn', 'docEdit', 'history'],
-  mgr: ['sla', 'inbox', 'inboxTeam', 'assign', 'docEdit', 'history', 'dash', 'audit'],
-  adm: ['sla', 'inbox', 'inboxRead', 'docEdit', 'history', 'dash', 'audit', 'admin'],
+  law: ['sla', 'inbox', 'inboxOwn', 'docEdit', 'history', 'cadence', 'projects'],
+  mgr: ['sla', 'inbox', 'inboxTeam', 'assign', 'docEdit', 'history', 'dash', 'audit', 'cadence', 'budget', 'budgetApprove', 'projects'],
+  adm: ['sla', 'inbox', 'inboxRead', 'docEdit', 'history', 'dash', 'audit', 'admin', 'cadence', 'budget', 'projects'],
 };
 function can(c) { return !!(state.role && CAPS[state.role].includes(c)); }
 /* Cada vista protegida exige una capacidad */
-const VIEW_CAP = { sla: 'sla', inbox: 'inbox', dash: 'dash', history: 'history', audit: 'audit', admin: 'admin' };
+const VIEW_CAP = { sla: 'sla', inbox: 'inbox', dash: 'dash', history: 'history', audit: 'audit', admin: 'admin', cadence: 'cadence', budget: 'budget', projects: 'projects' };
 /* ¿El usuario crea solicitudes propias? Solo el solicitante. El equipo legal las recibe. */
 function isRequester() { return state.role === 'req'; }
 
 const state = {
   role: null,
+  email: null,
+  junta: false,        // ¿miembro de la Junta Directiva? (atributo, no rol)
   view: 'home',
   area: null,
   tab: null,
@@ -36,6 +46,11 @@ const state = {
   modalSvc: null,
   modalStep: 1,
 };
+
+/* Acceso a documentación confidencial de Junta (Actas y Comités).
+   Autorizado si: es miembro de la Junta Directiva (incluye al CEO, que es miembro
+   por definición) o es la Gerente Legal (rol mgr). El Admin NO accede salvo que sea de la Junta. */
+function canGovBoard() { return state.junta || state.role === 'mgr'; }
 
 /* Estado de edición de documentación (en sesión) */
 const docState = { deleted: new Set(), rename: {} };
@@ -52,13 +67,24 @@ function selRole(el, role) {
   el.setAttribute('aria-checked', 'true');
   $$('.rb').forEach(b => { if (b !== el) b.setAttribute('aria-checked', 'false'); });
   state.role = role;
-  const b = $('#lbtn');
-  b.disabled = false;
-  b.classList.remove('armed'); void b.offsetWidth; b.classList.add('armed');   // pulso hacia el siguiente paso
+  $('#lbtn').disabled = false;
+  // Muestra el correo con que ingresará y detecta pertenencia a la Junta
+  const email = EMAILS[role];
+  const onBoard = isBoardEmail(email);
+  const box = $('#idDetect');
+  if (box) {
+    box.style.display = '';
+    box.innerHTML = `<div class="id-email"><i class="ti ti-mail"></i>${email}</div>
+      <div class="id-chip ${onBoard ? 'ok' : 'no'}"><i class="ti ti-${onBoard ? 'building-bank' : 'lock'}"></i>${onBoard ? 'Miembro de la Junta Directiva · acceso a Actas y Comités' : 'No pertenece a la Junta Directiva'}</div>`;
+  }
 }
 
 function doLogin() {
   if (!state.role) return;
+  const juntaChk = $('#juntaChk');
+  state.email = EMAILS[state.role];
+  // Acceso a Junta = correo en la lista autorizada (grupo M365) O simulación de demo
+  state.junta = isBoardEmail(state.email) || !!(juntaChk && juntaChk.checked);
   const r = ROLES[state.role];
   const nm = NAMES[state.role];
   // topbar usuario
@@ -67,76 +93,29 @@ function doLogin() {
   rt.style.background = 'color-mix(in srgb,' + r.color + ' 16%,transparent)';
   rt.style.color = r.color;
   const av = $('#uAv'); av.textContent = initials(nm); av.style.background = r.color;
+  // badge de Junta Directiva en el topbar
+  const jb = $('#juntaBadge'); if (jb) jb.style.display = state.junta ? '' : 'none';
   // permisos de navegación según rol
   applyPerms();
-  // transición inmersiva login → portal (barrido de marca que enmascara el cambio)
+  // transición
+  const sweep = $('#sweep'); if (sweep) sweep.classList.add('go');
   $('#ls').classList.add('hide');
-  const fx = $('#enterFx');
-  if (fx) { fx.classList.remove('sweep'); void fx.offsetWidth; fx.classList.add('sweep');
-    setTimeout(() => fx.classList.remove('sweep'), 1000); }
   setTimeout(() => {
     $('#ls').style.display = 'none';
     $('#topbar').style.display = '';
     $('#shell').style.display = '';
     $('#mtab').style.display = '';
+    $('#topbar').classList.add('enter');
+    $('#shell').classList.add('enter');
     buildAreaCards();
     buildHome();
     nav('home');
-  }, 480);
-}
-
-/* ───────── TEMA CLARO / OSCURO ───────── */
-function toggleTheme() {
-  const root = document.documentElement;
-  const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-  root.setAttribute('data-theme-anim', '');            // activa la transición de color
-  root.setAttribute('data-theme', next);
-  try { localStorage.setItem('tv-theme', next); } catch (e) {}
-  clearTimeout(toggleTheme._t);
-  toggleTheme._t = setTimeout(() => root.removeAttribute('data-theme-anim'), 340);
-}
-
-/* ───────── SPLASH DE MARCA (una vez por sesión) ───────── */
-function dismissSplash(fast) {
-  const s = $('#splash');
-  if (!s || s.dataset.done) return;
-  s.dataset.done = '1';
-  if (fast) s.classList.add('skip');
-  setTimeout(() => s.remove(), fast ? 460 : 120);
-}
-(function initSplash() {
-  const s = document.getElementById('splash');
-  if (!s) return;
-  if (document.documentElement.getAttribute('data-splash') === 'skip') { s.remove(); return; }
-  try { sessionStorage.setItem('tv-splash', '1'); } catch (e) {}
-  s.addEventListener('click', () => dismissSplash(true));
-  window.addEventListener('keydown', () => dismissSplash(true), { once: true });
-  setTimeout(() => dismissSplash(false), 2720);        // tras la animación CSS
-})();
-
-/* ───────── COUNT-UP DE MÉTRICAS ───────── */
-function animateCounts() {
-  if (window.matchMedia('(prefers-reduced-motion:reduce)').matches) return;
-  const scope = $('.vw.on');
-  if (!scope) return;
-  $$('.kpi-v,.lcard-v,.slac-v,.donut-v', scope).forEach(el => {
-    if (el.dataset.counted) return;
-    const raw = el.textContent.trim();
-    const m = raw.match(/^(\D*)(\d[\d,]*\.?\d*)(.*)$/s);
-    if (!m) return;
-    const pre = m[1], numStr = m[2].replace(/,/g, ''), suf = m[3];
-    const target = parseFloat(numStr);
-    if (isNaN(target)) return;
-    const decimals = (numStr.split('.')[1] || '').length;
-    el.dataset.counted = '1';
-    const dur = 620, t0 = performance.now();
-    (function tick(t) {
-      const p = Math.min(1, (t - t0) / dur);
-      const val = target * (1 - Math.pow(1 - p, 3));
-      el.textContent = pre + (decimals ? val.toFixed(decimals) : Math.round(val).toLocaleString('es')) + suf;
-      if (p < 1) requestAnimationFrame(tick); else el.textContent = raw;
-    })(t0);
-  });
+  }, 420);
+  setTimeout(() => {
+    if (sweep) sweep.classList.remove('go');
+    $('#topbar').classList.remove('enter');
+    $('#shell').classList.remove('enter');
+  }, 1200);
 }
 
 /* Muestra/oculta navegación y secciones según las capacidades del rol */
@@ -174,6 +153,9 @@ function nav(view, area) {
     if (view === 'dash') renderDash();
     if (view === 'history') renderHistory();
     if (view === 'admin') renderAdmin();
+    if (view === 'projects') renderProjects();
+    if (view === 'cadence') renderCadence();
+    if (view === 'budget') renderBudget();
   }
 
   // estados activos
@@ -186,8 +168,6 @@ function nav(view, area) {
   // scroll arriba del main
   const main = $('.main'); if (main) main.scrollTop = 0;
   window.scrollTo({ top: 0 });
-
-  requestAnimationFrame(animateCounts);
 }
 
 /* ───────── HOME: tarjetas de área ───────── */
@@ -207,8 +187,13 @@ function buildHome() {
   $('#homeKpis').innerHTML = kReqAct + kResolved + kDocs + kAlerts;
 
   // Nota contextual para el equipo legal
+  if (state.role === 'mgr' && typeof briefTotals === 'function') {
+    const bt = briefTotals();
+    $('#homeNote').innerHTML = `<div class="info-banner" style="margin-bottom:1.1rem;cursor:pointer" onclick="nav('cadence')"><i class="ti ti-sun-high"></i><span><strong style="font-weight:700">Brief del daily · ${DAILY_BRIEF.hora}</strong> — ${bt.total - bt.done} pendientes deben cerrarse hoy entre tú y tu equipo. Ábrelo antes del stand-up.</span><i class="ti ti-arrow-right" style="margin-left:auto"></i></div>`;
+    return;
+  }
   $('#homeNote').innerHTML = req ? '' :
-    `<div class="info-banner" style="margin-bottom:1.1rem"><i class="ti ti-eye"></i>Esta es la <strong style="font-weight:600;margin:0 3px">vista del solicitante</strong>. Como parte del equipo legal no creas solicitudes propias; gestiona las del equipo desde la <a href="#" onclick="nav('inbox');return false" style="color:var(--brand);font-weight:600">bandeja</a>.</div>`;
+    `<div class="info-banner" style="margin-bottom:1.1rem"><i class="ti ti-eye"></i><span>Esta es la <strong style="font-weight:600;margin:0 3px">vista del solicitante</strong>. Como parte del equipo legal no creas solicitudes propias; gestiona las del equipo desde la <a href="#" onclick="nav('inbox');return false" style="color:var(--brand);font-weight:600">bandeja</a>.</span></div>`;
 }
 
 const AREA_STATS = {
@@ -235,7 +220,6 @@ function buildAreaCards() {
     return `<article class="ac ac-${a.cls}" tabindex="0" role="button" onclick="nav('area','${k}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();nav('area','${k}')}">
       <div class="ac-top">
         <div class="aicon"><i class="ti ${a.icon}"></i></div>
-        <span class="abadge">§ 0${order.indexOf(k) + 1}</span>
       </div>
       <h3 class="atitle">${a.title}</h3>
       <p class="adesc">${AREA_DESC[k]}</p>
@@ -247,7 +231,21 @@ function buildAreaCards() {
         </span>
       </div>
     </article>`;
-  }).join('');
+  }).join('') + (can('projects') ? projectsAreaCard() : '');
+}
+
+/* Tarjeta de Proyectos estratégicos dentro de Áreas legales */
+function projectsAreaCard() {
+  const n = typeof PROJECTS !== 'undefined' ? PROJECTS.length : 0;
+  return `<article class="ac ac-prj" tabindex="0" role="button" onclick="nav('projects')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();nav('projects')}">
+    <div class="ac-top"><div class="aicon"><i class="ti ti-target-arrow"></i></div></div>
+    <h3 class="atitle">Proyectos estratégicos</h3>
+    <p class="adesc">Portafolio de iniciativas legales gestionado bajo Legal Project Management, con etapas, gates y hitos.</p>
+    <div class="aftr">
+      <span class="asla">Metodología: <strong>LPM · 5 etapas</strong></span>
+      <span style="display:flex;align-items:center;gap:.6rem"><span class="acnt">${n} proyectos</span><i class="ti ti-arrow-right aarr"></i></span>
+    </div>
+  </article>`;
 }
 
 /* ───────── DETALLE DE ÁREA ───────── */
@@ -290,17 +288,210 @@ function renderTab(key, tab) {
     case 'templates':  panel.innerHTML = templateBlock(key); break;
     case 'materials':  panel.innerHTML = docGrid(AUTO[key].materials); break;
     case 'policies':   panel.innerHTML = docGrid(AUTO[key].policies); break;
-    case 'actas':      panel.innerHTML = actasBlock(key); break;
+    case 'actas':      panel.innerHTML = canGovBoard() ? actasBlock(key) : govLocked('actas'); break;
     case 'courses':    panel.innerHTML = docGrid(AUTO[key].courses); break;
     case 'checklist':  panel.innerHTML = checklistBlock(key); initChecklist(panel); break;
     case 'certs':      panel.innerHTML = certsBlock(key); animateCertBars(panel); break;
     case 'timeline':   panel.innerHTML = timelineBlock(key); break;
     case 'calendar':   panel.innerHTML = calendarBlock(key); break;
     case 'matrix':     panel.innerHTML = matrixBlock(key); break;
-    case 'committees': panel.innerHTML = committeesBlock(key); break;
+    case 'committees': panel.innerHTML = canGovBoard() ? committeesBlock(key) : govLocked('committees'); break;
     case 'svcs':       panel.innerHTML = svcsBlock(key); break;
     case 'faq':        panel.innerHTML = faqBlock(key); initFaq(panel); break;
+    case 'contracts':  panel.innerHTML = contractsBlock(); break;
+    case 'authority':  panel.innerHTML = authorityBlock(); break;
+    case 'agent':      panel.innerHTML = agentBlock(key); initAgent(panel, key); break;
   }
+}
+
+/* ───────── CONTRATOS SUSCRITOS (Transacciones) ───────── */
+function contractsBlock() {
+  const vig = CONTRACTS.filter(c => c.status === 'vigente').length;
+  const ven = CONTRACTS.filter(c => c.status === 'por-vencer').length;
+  const rows = CONTRACTS.map(c => {
+    const s = CONTRACT_STATUS[c.status];
+    return `<tr onclick="openContract('${c.id}')" style="cursor:pointer">
+      <td><span class="sc-code">${c.id}</span></td>
+      <td style="font-weight:600">${c.title}<div style="font-size:11.5px;color:var(--mut);font-weight:400;margin-top:2px">${c.type}</div></td>
+      <td>${c.counterparty}</td>
+      <td style="color:var(--mut);white-space:nowrap">${c.jurisdiction}</td>
+      <td style="white-space:nowrap">${c.value}</td>
+      <td style="color:var(--mut);white-space:nowrap">${c.signed} → ${c.expires}</td>
+      <td><span class="stpill ${s.cls}"><i class="ti ${s.icon}"></i>${s.txt}</span></td>
+    </tr>`;
+  }).join('');
+  return `<div class="info-banner" style="margin-bottom:1.1rem"><i class="ti ti-file-check"></i><span>Repositorio de contratos suscritos por el grupo. Haz clic en cualquiera para ver el detalle, o consulta al <strong>Asistente IA</strong> para un resumen sin abrir el documento.</span></div>
+    <div class="lkrow" style="margin-bottom:1.25rem">
+      <div class="lcard"><div class="lcard-l">Contratos suscritos</div><div class="lcard-v">${CONTRACTS.length}</div><div class="lcard-s" style="color:var(--ctl)">En repositorio</div></div>
+      <div class="lcard"><div class="lcard-l">Vigentes</div><div class="lcard-v">${vig}</div><div class="lcard-s" style="color:var(--cel)">Activos</div></div>
+      <div class="lcard"><div class="lcard-l">Por vencer</div><div class="lcard-v">${ven}</div><div class="lcard-s" style="color:var(--ctl)">Requieren atención</div></div>
+    </div>
+    <div class="rtable-wrap"><div style="overflow-x:auto"><table class="rt">
+      <thead><tr><th>Código</th><th>Contrato</th><th>Contraparte</th><th>Jurisdicción</th><th>Valor</th><th>Vigencia</th><th>Estado</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table></div></div>`;
+}
+function openContract(id) {
+  const c = CONTRACTS.find(x => x.id === id);
+  if (!c) return;
+  const s = CONTRACT_STATUS[c.status];
+  $('#mBg').classList.add('on');
+  document.body.style.overflow = 'hidden';
+  $('#mBody').innerHTML = `
+    <div class="mhdr">
+      <div><span class="mcode">${c.id}</span><div class="mtitle">${c.title}</div></div>
+      <button class="mclose" onclick="closeModal()" aria-label="Cerrar"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="ct-meta">
+      <span class="stpill ${s.cls}"><i class="ti ${s.icon}"></i>${s.txt}</span>
+      <span class="ct-chip"><i class="ti ti-tag"></i>${c.type}</span>
+      <span class="ct-chip"><i class="ti ti-map-pin"></i>${c.jurisdiction}</span>
+      <span class="ct-chip"><i class="ti ti-cash"></i>${c.value}</span>
+      <span class="ct-chip"><i class="ti ti-calendar"></i>${c.signed} → ${c.expires}</span>
+    </div>
+    <div class="ct-sect"><h4><i class="ti ti-users"></i>Partes</h4><p>${c.parties}</p></div>
+    <div class="ct-sect"><h4><i class="ti ti-businessplan"></i>Condiciones comerciales</h4><p>${c.commercial}</p></div>
+    <div class="ct-sect"><h4><i class="ti ti-door-exit"></i>Terminación anticipada</h4><p>${c.termination}</p></div>
+    <div class="ct-sect"><h4><i class="ti ti-alert-triangle"></i>Penalidades</h4><p>${c.penalties}</p></div>`;
+}
+
+/* ───────── ASISTENTE IA (Governance · Transacciones) ───────── */
+/* Motor de chat genérico. Cada área define su system prompt, sugerencias y
+   fallback en data.js. Responde desde una base de conocimiento curada; no abre
+   documentos ni revela contenido confidencial. */
+const AGENTS = {
+  gov: {
+    system: () => govAgentSystem(), suggestions: () => GOV_AGENT_SUGGESTIONS, fallback: govFallback,
+    banner: 'Asistente basado en la <strong>base de conocimiento de governance</strong> del portal. Da información de referencia, no asesoría legal, y no revela contenido confidencial de actas.',
+    title: 'Pregúntale al Asistente de Governance',
+    desc: 'Responde preguntas básicas de gobierno corporativo —representantes legales, matriz de aprobaciones, comités, políticas— sin que tengas que abrir los documentos.',
+    ph: 'Escribe tu pregunta de governance…', audit: 'Consulta al Asistente de Governance', color: 'var(--cg)',
+  },
+  tx: {
+    system: () => txAgentSystem(), suggestions: () => TX_AGENT_SUGGESTIONS, fallback: txFallback,
+    banner: 'Asistente basado en el <strong>repositorio de contratos suscritos</strong>. Resume partes, condiciones comerciales, terminación anticipada y penalidades. Información de referencia, no asesoría legal.',
+    title: 'Pregúntale al Asistente de Contratos',
+    desc: 'Consulta cualquier contrato suscrito y obtén un resumen de las partes, condiciones comerciales, terminación anticipada y penalidades, sin abrir el documento.',
+    ph: 'Pregunta por un contrato suscrito…', audit: 'Consulta al Asistente de Contratos', color: 'var(--ct)',
+  },
+};
+const agentSt = { gov: { chat: [], busy: false }, tx: { chat: [], busy: false } };
+
+function agentBlock(area) {
+  const cfg = AGENTS[area], st = agentSt[area];
+  const chips = cfg.suggestions().map(q =>
+    `<button class="ga-chip" onclick="agentAsk('${area}',this.textContent)">${q}</button>`).join('');
+  const history = st.chat.length ? st.chat.map(agentBubble).join('') : `
+    <div class="ga-empty">
+      <div class="ga-empty-ic"><i class="ti ti-sparkles"></i></div>
+      <h3>${cfg.title}</h3>
+      <p>${cfg.desc}</p>
+      <div class="ga-chips">${chips}</div>
+    </div>`;
+  return `
+    <div class="info-banner ga-banner"><i class="ti ti-robot"></i><span>${cfg.banner}</span></div>
+    <div class="ga-wrap" style="--ga-c:${cfg.color}">
+      <div class="ga-stream" id="gaStream">${history}</div>
+      <form class="ga-form" onsubmit="agentSubmit(event,'${area}')">
+        <input id="gaInput" class="ga-input" type="text" autocomplete="off" placeholder="${cfg.ph}" ${st.busy ? 'disabled' : ''}>
+        <button type="submit" class="ga-send" ${st.busy ? 'disabled' : ''} aria-label="Enviar"><i class="ti ti-arrow-up"></i></button>
+      </form>
+      <div class="ga-foot"><i class="ti ti-info-circle"></i>Las respuestas pueden contener errores. Verifica los datos críticos con el equipo legal.</div>
+    </div>`;
+}
+function initAgent(panel, area) {
+  const inp = $('#gaInput', panel);
+  if (inp && !agentSt[area].busy) inp.focus();
+  const stream = $('#gaStream', panel);
+  if (stream) stream.scrollTop = stream.scrollHeight;
+}
+function agentBubble(m) {
+  if (m.role === 'user') return `<div class="ga-msg user"><div class="ga-b">${escapeHtml(m.content)}</div></div>`;
+  return `<div class="ga-msg bot"><div class="ga-av"><i class="ti ti-robot"></i></div><div class="ga-b">${fmtBot(m.content)}</div></div>`;
+}
+function escapeHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+/* Escapa y aplica formato ligero (negritas **x**, viñetas) a la respuesta */
+function fmtBot(s) {
+  return escapeHtml(s)
+    .replace(/(^|\n)#{1,3}\s*(.+)/g, '$1<strong>$2</strong>')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/(^|\n)[-*]\s?/g, '$1• ');
+}
+
+function agentSubmit(e, area) {
+  e.preventDefault();
+  const inp = $('#gaInput');
+  const q = inp ? inp.value.trim() : '';
+  if (q) agentAsk(area, q);
+}
+
+async function agentAsk(area, question) {
+  const cfg = AGENTS[area], st = agentSt[area];
+  if (st.busy || !question.trim()) return;
+  st.busy = true;
+  st.chat.push({ role: 'user', content: question.trim() });
+  renderTab(area, 'agent');
+  const stream = $('#gaStream');
+  if (stream) {
+    stream.insertAdjacentHTML('beforeend', `<div class="ga-msg bot" id="gaTyping"><div class="ga-av"><i class="ti ti-robot"></i></div><div class="ga-b ga-typing"><span></span><span></span><span></span></div></div>`);
+    stream.scrollTop = stream.scrollHeight;
+  }
+  if (typeof logAudit === 'function') logAudit(`${cfg.audit}: “${question.trim().slice(0, 60)}”`, cfg.color);
+
+  let answer;
+  try {
+    if (window.claude && window.claude.complete) {
+      answer = await window.claude.complete({
+        system: cfg.system(),
+        messages: st.chat.map(m => ({ role: m.role, content: m.content })),
+        max_tokens: 600,
+      });
+    } else {
+      answer = cfg.fallback(question);
+    }
+  } catch (err) {
+    answer = cfg.fallback(question);
+  }
+  st.chat.push({ role: 'assistant', content: (answer || '').trim() || 'No pude generar una respuesta. Intenta de nuevo.' });
+  st.busy = false;
+  renderTab(area, 'agent');
+}
+
+/* Respuesta local si el asistente IA no está disponible (offline / fuera del host) */
+function govFallback(q) {
+  const n = q.toLowerCase();
+  const ent = GOV_ENTITIES.find(e => [e.name, ...e.alias].some(a => n.includes(a.toLowerCase())));
+  if (ent && (n.includes('represent') || n.includes('legal') || n.includes('quién') || n.includes('quien'))) {
+    return `El representante legal de ${ent.name} es ${ent.rep}, ${ent.repCargo} (desde ${ent.repDesde}). (Fuente: ${ent.fuente}.)`;
+  }
+  if (ent) {
+    return `${ent.name} está constituida en ${ent.pais} (${ent.constitucion}). Representante legal: ${ent.rep}. Objeto: ${ent.objeto} (Fuente: ${ent.fuente}.)`;
+  }
+  if (n.includes('junta') && n.includes('aprob')) return GOV_FACTS[0] + ' ' + GOV_FACTS[1];
+  if (n.includes('comité') || n.includes('comite') || n.includes('sesiona') || n.includes('auditor')) return GOV_FACTS[3];
+  if (n.includes('polít') || n.includes('polit')) return GOV_FACTS[5];
+  return 'No tengo ese dato en la base de governance. Te sugiero solicitarlo al equipo legal o consultar el documento correspondiente.';
+}
+
+/* Fallback local del Asistente de Contratos */
+function txFallback(q) {
+  const n = q.toLowerCase();
+  if (n.includes('venc')) {
+    const v = CONTRACTS.filter(c => c.status === 'por-vencer');
+    return v.length ? 'Contratos por vencer: ' + v.map(c => `${c.id} (${c.title}, vence ${c.expires})`).join('; ') + '.' : 'No hay contratos marcados como por vencer en el repositorio.';
+  }
+  const c = CONTRACTS.find(x => {
+    if (n.includes(x.id.toLowerCase())) return true;
+    const brand = x.counterparty.toLowerCase().replace(/,.*$/, '').split(/\s+/).filter(w => w.length > 3);
+    const type = x.type.toLowerCase().split(/[\s/]+/).filter(w => w.length > 3);
+    return brand.some(w => n.includes(w)) || type.some(w => n.includes(w));
+  });
+  if (!c) return 'No encuentro ese contrato en el repositorio. Verifica el código o solicita el documento al equipo legal.';
+  if (n.includes('penal')) return `${c.id} — **Penalidades:** ${c.penalties}`;
+  if (n.includes('termin')) return `${c.id} — **Terminación anticipada:** ${c.termination}`;
+  if (n.includes('comercial') || n.includes('precio') || n.includes('pago') || n.includes('condicion')) return `${c.id} — **Condiciones comerciales:** ${c.commercial}`;
+  if (n.includes('parte')) return `${c.id} — **Partes:** ${c.parties}`;
+  return `${c.id} — ${c.title}\n• **Partes:** ${c.parties}\n• **Condiciones comerciales:** ${c.commercial}\n• **Terminación anticipada:** ${c.termination}\n• **Penalidades:** ${c.penalties}`;
 }
 
 /* ── Bloques de autoservicio ── */
@@ -421,8 +612,20 @@ function committeesBlock(key) {
 }
 
 function actasBlock(key) {
-  return `<div class="info-banner" style="margin-bottom:1.1rem"><i class="ti ti-lock"></i>Acceso restringido. Solo miembros del comité, Gerente Legal y Admin pueden abrir actas de sesiones pasadas.</div>
+  return `<div class="info-banner" style="margin-bottom:1.1rem"><i class="ti ti-building-bank"></i>Documentación confidencial de la Junta Directiva. Tu acceso está autorizado.</div>
     ${docGrid(AUTO[key].actas)}`;
+}
+
+/* Panel de bloqueo para Actas / Comités cuando el usuario no pertenece a la Junta */
+function govLocked(which) {
+  const label = which === 'actas' ? 'las actas de comités' : 'la información de comités';
+  return `<div class="gov-locked">
+    <div class="gov-locked-ic"><i class="ti ti-lock"></i></div>
+    <h3>Acceso restringido a la Junta Directiva</h3>
+    <p>El acceso a ${label} está limitado a los <strong>miembros de la Junta Directiva</strong>, al <strong>CEO</strong> y a la <strong>Gerente Legal</strong>. La pertenencia se verifica mediante el grupo corporativo de Microsoft 365 “Junta Directiva”.</p>
+    <div class="gov-locked-note"><i class="ti ti-mail"></i><span>Tu correo <strong>@ternova.group</strong> te autentica como empleado, pero no te autoriza para esta sección.</span></div>
+    <button class="mini-btn" onclick="toast('Solicitud de acceso enviada al Admin del portal')"><i class="ti ti-key"></i>Solicitar acceso al Admin</button>
+  </div>`;
 }
 
 /* ── Servicios con abogado ── */
@@ -474,6 +677,7 @@ function toggleFaq(q) { q.parentElement.classList.toggle('open'); }
 function openModal(key, idx) {
   const svc = SVCS[key][idx];
   state.modalSvc = svc; state.modalStep = 1;
+  state.authReq = svc.contract ? { type: svc.contract, amount: 0, flags: new Set() } : null;
   $('#mBg').classList.add('on');
   document.body.style.overflow = 'hidden';
   renderModal();
@@ -483,8 +687,14 @@ function closeModal() {
   document.body.style.overflow = '';
   state.modalSvc = null;
 }
+/* Los servicios de contrato (Transacciones) suman un paso de aprobaciones */
+function modalSteps() {
+  return state.modalSvc && state.modalSvc.contract
+    ? ['Insumos', 'Aprobaciones', 'Envío'] : ['Insumos', 'Envío'];
+}
 function renderModal() {
   const s = state.modalSvc;
+  const steps = modalSteps();
   const body = $('#mBody');
   body.innerHTML = `
     <div class="mhdr">
@@ -495,12 +705,18 @@ function renderModal() {
       <button class="mclose" onclick="closeModal()" aria-label="Cerrar"><i class="ti ti-x"></i></button>
     </div>
     <div class="msteps">
-      <div class="mstep ${state.modalStep === 1 ? 'act' : 'done'}" id="mStep1"><span class="mstep-n">${state.modalStep === 1 ? '1' : '✓'}</span>Insumos</div>
-      <div class="mstep ${state.modalStep === 2 ? 'act' : ''}" id="mStep2"><span class="mstep-n">2</span>Envío</div>
+      ${steps.map((lbl, i) => {
+        const n = i + 1, cls = state.modalStep === n ? 'act' : state.modalStep > n ? 'done' : '';
+        return `<div class="mstep ${cls}" id="mStep${n}"><span class="mstep-n">${state.modalStep > n ? '✓' : n}</span>${lbl}</div>`;
+      }).join('')}
     </div>
     <div id="mStepBody"></div>`;
-  state.modalStep === 1 ? renderStep1() : renderStep2();
+  const last = steps.length;
+  if (state.modalStep === 1) renderStep1();
+  else if (state.modalStep === last) renderStep2();
+  else renderStepAuth();
 }
+function goStep(n) { state.modalStep = n; renderModal(); }
 function renderStep1() {
   const s = state.modalSvc;
   $('#mStepBody').innerHTML = `
@@ -509,7 +725,7 @@ function renderStep1() {
       <div class="ins-box"></div><div class="ins-txt">${t}</div></div>`).join('')}
     <div class="prog-bar"><div class="prog-fill" id="progFill"></div></div>
     <div class="prog-lbl"><span id="progTxt">0 de ${s.ins.length} confirmados</span><span>SLA: ${s.sla}</span></div>
-    <button class="mcont" id="contBtn" disabled onclick="goStep2()"><i class="ti ti-arrow-right"></i>Continuar al envío</button>`;
+    <button class="mcont" id="contBtn" disabled onclick="goStep(2)"><i class="ti ti-arrow-right"></i>Continuar${s.contract ? ' a aprobaciones' : ' al envío'}</button>`;
 }
 function toggleIns(el) {
   el.classList.toggle('chk');
@@ -520,12 +736,11 @@ function toggleIns(el) {
   $('#progTxt').textContent = `${done} de ${all.length} confirmados`;
   $('#contBtn').disabled = done < all.length;
 }
-function goStep2() { state.modalStep = 2; renderModal(); }
 function renderStep2() {
   const s = state.modalSvc;
-  $('#mStep1').classList.add('done'); $('#mStep1').classList.remove('act');
   $('#mStepBody').innerHTML = `
-    <div class="sla-info"><i class="ti ti-clock-hour-4"></i>Tiempo estimado de respuesta: <strong style="margin-left:2px">${s.sla}</strong></div>
+    ${s.contract && typeof authSummary === 'function' ? authSummary() : ''}
+    <div class="sla-info"><i class="ti ti-clock-hour-4"></i><span>Tiempo estimado de respuesta: <strong style="margin-left:2px">${s.sla}</strong></span></div>
     <form class="mform" onsubmit="submitModal(event)">
       <div class="fg"><label>Asunto de la solicitud</label>
         <input class="fc" required placeholder="Resume tu solicitud en una línea"></div>
@@ -544,9 +759,15 @@ function renderStep2() {
 }
 function submitModal(e) {
   e.preventDefault();
-  const code = state.modalSvc.code;
+  const s = state.modalSvc, code = s.code;
+  let extra = '';
+  if (s.contract && state.authReq) {
+    const res = calcAuth(state.authReq.type, state.authReq.amount, state.authReq.flags);
+    extra = ` · requiere aprobación hasta ${res.final.code}`;
+    if (typeof logAudit === 'function') logAudit(`${NAMES[state.role]} envió ${code} (${authMoney(res.amt)}) — ruta de aprobación: ${res.chain.join(' → ')}`, 'var(--ct)');
+  }
   closeModal();
-  toast(`Solicitud ${code} enviada · ticket #${Math.floor(1000 + Math.random() * 9000)}`);
+  toast(`Solicitud ${code} enviada · ticket #${Math.floor(1000 + Math.random() * 9000)}${extra}`);
 }
 
 /* ───────── EDICIÓN DE DOCUMENTACIÓN ───────── */
@@ -635,7 +856,7 @@ function renderReqs() {
   const tb = $('#reqBody');
   // El equipo legal no crea solicitudes propias: vista del solicitante vacía
   if (!isRequester()) {
-    $('#reqsNote').innerHTML = `<div class="info-banner" style="margin-bottom:1.1rem"><i class="ti ti-eye"></i>Vista del solicitante. Como parte del equipo legal no tienes solicitudes propias; las solicitudes entrantes se gestionan en la <a href="#" onclick="nav('inbox');return false" style="color:var(--brand);font-weight:600">bandeja del equipo</a>.</div>`;
+    $('#reqsNote').innerHTML = `<div class="info-banner" style="margin-bottom:1.1rem"><i class="ti ti-eye"></i><span>Vista del solicitante. Como parte del equipo legal no tienes solicitudes propias; las solicitudes entrantes se gestionan en la <a href="#" onclick="nav('inbox');return false" style="color:var(--brand);font-weight:600">bandeja del equipo</a>.</span></div>`;
     const filtersHide = $('#reqFilters'); if (filtersHide) filtersHide.style.display = 'none';
     tb.innerHTML = `<tr><td colspan="6"><div class="empty"><i class="ti ti-folder-open"></i>No tienes solicitudes propias registradas.</div></td></tr>`;
     return;
@@ -710,7 +931,6 @@ function renderInbox() {
     const risk = mine.filter(r => r.sla === 'crit').length;
     host.innerHTML = `
       <div style="margin-bottom:1.5rem">
-        <div class="eyebrow">Mi trabajo</div>
         <h1 class="ptitle">Mis casos asignados</h1>
         <p class="psub">Las solicitudes que tienes asignadas. Actualiza el estado conforme avanzas — la asignación y las urgencias las gestiona el Gerente legal.</p>
       </div>
@@ -729,7 +949,6 @@ function renderInbox() {
   const canQueue = can('assign');
   host.innerHTML = `
     <div style="margin-bottom:1.5rem">
-      <div class="eyebrow">Equipo legal</div>
       <h1 class="ptitle">Bandeja del equipo</h1>
       <p class="psub">${readonly ? 'Vista de administrador con visibilidad completa de la operación legal.' : 'Solicitudes entrantes, carga por abogado y gestión de asignaciones, urgencias y estado.'}</p>
     </div>
@@ -956,3 +1175,33 @@ document.addEventListener('keydown', e => {
 });
 document.addEventListener('click', e => { if (!e.target.closest('.dd')) closeAllDD(); }, true);
 $('#mBg') && $('#mBg').addEventListener('click', e => { if (e.target.id === 'mBg') closeModal(); });
+
+/* ───────── TEMA (claro / oscuro) ───────── */
+function toggleTheme() {
+  const root = document.documentElement;
+  const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
+  root.dataset.theme = next;
+  try { localStorage.setItem('pl-theme', next); } catch (e) {}
+}
+
+/* ───────── SPLASH DE MARCA (una vez por sesión, saltable) ───────── */
+let splashTimer;
+function endSplash() {
+  const sp = $('#splash');
+  if (!sp) return;
+  sp.classList.add('done');
+  setTimeout(() => sp.remove(), 600);
+}
+function skipSplash() { clearTimeout(splashTimer); endSplash(); }
+function initSplash() {
+  const sp = $('#splash');
+  if (!sp) return;
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  requestAnimationFrame(() => sp.classList.add('play'));
+  sp.addEventListener('click', e => { if (!e.target.closest('.sp-skip')) skipSplash(); });
+  document.addEventListener('keydown', function onKey(e) {
+    if ($('#splash')) { skipSplash(); document.removeEventListener('keydown', onKey); }
+  });
+  splashTimer = setTimeout(endSplash, reduce ? 900 : 2350);
+}
+initSplash();

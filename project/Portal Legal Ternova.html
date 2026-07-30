@@ -1,36 +1,33 @@
 <!DOCTYPE html>
-<html lang="es" data-theme="light" data-density="default">
+<html lang="es" data-theme="light">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Portal Legal · Ternova</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.7.0/dist/tabler-icons.min.css">
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="styles.css?v=20260728b">
 <script>
-/* Fija tema y flag de splash antes del primer pintado (evita parpadeo) */
-(function(){try{
-  var t=localStorage.getItem('tv-theme');
-  if(t==='dark'||t==='light')document.documentElement.setAttribute('data-theme',t);
-  if(sessionStorage.getItem('tv-splash')==='1')document.documentElement.setAttribute('data-splash','skip');
-}catch(e){}})();
+  (function(){try{var t=localStorage.getItem('pl-theme');if(t==='dark'||t==='light')document.documentElement.dataset.theme=t;}catch(e){}})();
 </script>
 </head>
 <body>
 
 <!-- ═══════════ SPLASH DE MARCA ═══════════ -->
-<div id="splash" aria-hidden="true">
-  <div class="sp-stage">
-    <div class="sp-mark"><span class="sp-seal"></span><span class="sp-word">TERNOVA</span></div>
-    <div class="sp-rule"></div>
-    <div class="sp-tag">Portal Legal</div>
+<div id="splash" role="presentation">
+  <div class="sp-inner">
+    <div class="sp-word">
+      <span class="sp-bar"></span>
+      <span class="sp-letters"><span>T</span><span>E</span><span>R</span><span>N</span><span>O</span><span>V</span><span>A</span></span>
+    </div>
+    <div class="sp-line"></div>
+    <div class="sp-sub">Portal Legal</div>
   </div>
+  <button class="sp-skip" onclick="skipSplash()">Saltar <i class="ti ti-chevron-right" style="font-size:13px"></i></button>
 </div>
-
-<!-- ═══════════ BARRIDO DE ENTRADA AL PORTAL ═══════════ -->
-<div id="enterFx" aria-hidden="true"></div>
+<div id="sweep"></div>
 
 <!-- ═══════════ LOGIN ═══════════ -->
 <div id="ls">
@@ -39,7 +36,7 @@
       <div class="lhero-mark">
         <span class="wm" style="color:#fff;font-size:22px"><span class="wm-bar"></span>Ternova</span>
       </div>
-      <div class="lhero-tag">Portal de servicios Legales · Autoservicio corporativo</div>
+      <div class="lhero-tag">Portal de servicios Legales · Autoservicio corporativo</div>
       <h1>Todo lo legal,<br>en un solo lugar.</h1>
       <p>Documentos, plantillas y servicios del equipo legal — disponibles cuando los necesitas, con trazabilidad completa.</p>
       <div class="lhero-stats">
@@ -62,6 +59,12 @@
         <button class="rb" role="radio" aria-checked="false" onclick="selRole(this,'adm')">
           <i class="ti ti-settings"></i><span>Admin</span><small>Acceso total</small></button>
       </div>
+      <div class="id-detect" id="idDetect" style="display:none"></div>
+      <label class="ljunta" id="ljunta">
+        <input type="checkbox" id="juntaChk">
+        <span class="ljunta-box"></span>
+        <span class="ljunta-txt">Simular pertenencia a la Junta (demo)<small>Fuerza el acceso a Actas y Comités aunque el correo no esté en el grupo de Microsoft 365</small></span>
+      </label>
       <button class="lbtn" id="lbtn" disabled onclick="doLogin()">
         <i class="ti ti-brand-windows"></i> Continuar con Microsoft 365</button>
       <div class="lnote"><i class="ti ti-lock"></i> Acceso restringido a @ternova.group</div>
@@ -80,7 +83,8 @@
     <input type="text" placeholder="Buscar servicios, documentos, expedientes…" onkeydown="if(event.key==='Enter')toast('Buscando: '+this.value)">
   </div>
   <div class="tbr">
-    <button class="ib theme-btn" aria-label="Cambiar tema claro/oscuro" onclick="toggleTheme()"><i class="ti ti-sun"></i><i class="ti ti-moon"></i></button>
+    <span class="junta-badge" id="juntaBadge" style="display:none" title="Miembro de la Junta Directiva"><i class="ti ti-building-bank"></i>Junta</span>
+    <button class="ib tt" id="themeBtn" aria-label="Cambiar tema" onclick="toggleTheme()"><i class="ti ti-sun"></i><i class="ti ti-moon"></i></button>
     <button class="ib" data-cap="sla" aria-label="Alertas" onclick="nav('sla')"><i class="ti ti-bell"></i><span class="ndot"></span></button>
     <button class="ib" aria-label="Ayuda" onclick="toast('Centro de ayuda — próximamente')"><i class="ti ti-help"></i></button>
     <div class="usr" onclick="logout()" title="Cerrar sesión">
@@ -109,6 +113,7 @@
       <a class="ni" data-nav="area-lit" onclick="nav('area','lit')"><span class="nd2" style="background:var(--cl)"></span>Litigio y arbitraje</a>
       <a class="ni" data-nav="area-edu" onclick="nav('area','edu')"><span class="nd2" style="background:var(--ce)"></span>Educación legal</a>
       <a class="ni" data-nav="area-gov" onclick="nav('area','gov')"><span class="nd2" style="background:var(--cg)"></span>Governance</a>
+      <a class="ni" data-nav="projects" data-cap="projects" onclick="nav('projects')"><span class="nd2" style="background:var(--brand-2)"></span>Proyectos estratégicos</a>
     </div>
     <div class="sb-s" data-cap="inbox dash history audit">
       <div class="sb-div"></div>
@@ -117,6 +122,12 @@
       <a class="ni" data-nav="dash" data-cap="dash" onclick="nav('dash')"><i class="ti ti-chart-histogram"></i><span class="ni-lbl">Tableros</span></a>
       <a class="ni" data-nav="history" data-cap="history" onclick="nav('history')"><i class="ti ti-versions"></i><span class="ni-lbl">Historial de cambios</span></a>
       <a class="ni" data-nav="audit" data-cap="audit" onclick="nav('audit')"><i class="ti ti-history"></i><span class="ni-lbl">Auditoría</span></a>
+    </div>
+    <div class="sb-s" data-cap="cadence budget">
+      <div class="sb-div"></div>
+      <div class="sb-l">Operación del área</div>
+      <a class="ni" data-nav="cadence" data-cap="cadence" onclick="nav('cadence')"><i class="ti ti-repeat"></i><span class="ni-lbl">Cadencia de reuniones</span></a>
+      <a class="ni" data-nav="budget" data-cap="budget" onclick="nav('budget')"><i class="ti ti-coin"></i><span class="ni-lbl">Presupuesto</span></a>
     </div>
     <div class="sb-s" data-cap="admin">
       <div class="sb-div"></div>
@@ -131,7 +142,6 @@
     <!-- HOME -->
     <section class="vw" id="v-home">
       <div style="margin-bottom:1.75rem">
-        <div class="eyebrow">Portal Legal</div>
         <h1 class="ptitle">Bienvenido al portal <em>legal</em>.</h1>
         <p class="psub">Resuelve por autoservicio lo que puedas, solicita al equipo legal lo que necesite criterio jurídico. Todo con SLA claro y trazabilidad.</p>
       </div>
@@ -149,7 +159,6 @@
     <!-- MIS SOLICITUDES -->
     <section class="vw" id="v-reqs">
       <div style="margin-bottom:1.5rem">
-        <div class="eyebrow">Seguimiento</div>
         <h1 class="ptitle">Mis solicitudes</h1>
         <p class="psub">Historial completo de tus solicitudes al equipo legal, con responsable y estado de SLA.</p>
       </div>
@@ -177,7 +186,6 @@
     <!-- ALERTAS SLA -->
     <section class="vw" id="v-sla">
       <div style="margin-bottom:1.5rem">
-        <div class="eyebrow">Vencimientos</div>
         <h1 class="ptitle">Alertas SLA</h1>
         <p class="psub">Vencimientos contractuales y regulatorios próximos. Actúa antes de que escalen.</p>
       </div>
@@ -216,10 +224,18 @@
     <!-- ADMINISTRACIÓN (dinámica) -->
     <section class="vw" id="v-admin"></section>
 
+    <!-- PROYECTOS ESTRATÉGICOS (dinámica) -->
+    <section class="vw" id="v-projects"></section>
+
+    <!-- CADENCIA DE REUNIONES (dinámica) -->
+    <section class="vw" id="v-cadence"></section>
+
+    <!-- PRESUPUESTO (dinámica) -->
+    <section class="vw" id="v-budget"></section>
+
     <!-- AUDITORÍA -->
     <section class="vw" id="v-audit">
       <div style="margin-bottom:1.5rem">
-        <div class="eyebrow">Trazabilidad</div>
         <h1 class="ptitle">Registro de auditoría</h1>
         <p class="psub">Bitácora inmutable de acciones sobre solicitudes, documentos y aprobaciones.</p>
       </div>
@@ -251,8 +267,11 @@
   <a data-nav="admin" data-cap="admin" style="display:none" onclick="nav('admin')"><i class="ti ti-settings"></i>Admin</a>
 </nav>
 
-<script src="data.js"></script>
-<script src="app.js"></script>
-<script src="views.js"></script>
+<script src="data.js?v=20260728b"></script>
+<script src="app.js?v=20260728b"></script>
+<script src="views.js?v=20260728b"></script>
+<script src="ops.js?v=20260728b"></script>
+<script src="authority.js?v=20260728b"></script>
+<script src="projects.js?v=20260728b"></script>
 </body>
 </html>

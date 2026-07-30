@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Costeo de implementación · Portal Legal Ternova</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+doc-page:not(:defined){visibility:hidden}
+:root{--brand:#2E1065;--brand2:#5B2A86;--txt:#16121F;--mut:#6B6577;--brd:#E4E0EA;--bg2:#F7F5FA;--ok:#1F7A4D;--warn:#B5780A;--crit:#C0392B;--mono:'IBM Plex Mono',monospace}
+body{font-family:'Inter',system-ui,sans-serif;color:var(--txt);font-size:10.5pt;line-height:1.55}
+a{color:var(--brand2)}a:hover{color:var(--brand)}
+h1{font-size:24pt;font-weight:800;letter-spacing:-.02em;line-height:1.1;margin:0 0 .35rem}
+h1 em{font-style:normal;color:var(--brand2)}
+h2{font-size:14pt;font-weight:700;letter-spacing:-.01em;margin:1.6rem 0 .5rem;padding-bottom:.3rem;border-bottom:2px solid var(--brand);break-after:avoid}
+h3{font-size:11.5pt;font-weight:700;margin:1.1rem 0 .35rem;break-after:avoid}
+p{margin:0 0 .6rem}
+.kicker{font-family:var(--mono);font-size:8.5pt;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--brand2)}
+.lede{font-size:11pt;color:var(--mut);max-width:44em;margin-bottom:1rem}
+.meta{display:flex;gap:1.5rem;flex-wrap:wrap;font-size:8.5pt;color:var(--mut);border-top:1px solid var(--brd);border-bottom:1px solid var(--brd);padding:.5rem 0;margin-bottom:1.4rem}
+.meta b{color:var(--txt);font-weight:600}
+table{width:100%;border-collapse:collapse;font-size:9pt;margin:.5rem 0 1rem}
+th{text-align:left;background:var(--bg2);font-weight:700;font-size:8pt;letter-spacing:.04em;text-transform:uppercase;color:var(--mut);padding:.45rem .5rem;border-bottom:1px solid var(--brd)}
+td{padding:.42rem .5rem;border-bottom:1px solid var(--brd);vertical-align:top}
+td.n,th.n{text-align:right;font-family:var(--mono);white-space:nowrap;font-variant-numeric:tabular-nums}
+tr{break-inside:avoid}
+tfoot td{font-weight:700;background:var(--bg2);border-bottom:none}
+.tot td{font-weight:700;background:var(--bg2)}
+.cards{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.6rem;margin:.7rem 0 1rem}
+.card{border:1px solid var(--brd);border-top:3px solid var(--brand2);border-radius:6px;padding:.7rem .8rem;break-inside:avoid}
+.card .t{font-size:8pt;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--mut)}
+.card .v{font-family:var(--mono);font-size:15pt;font-weight:600;letter-spacing:-.02em;margin:.25rem 0}
+.card .s{font-size:8.5pt;color:var(--mut);line-height:1.4}
+.note{background:var(--bg2);border-left:3px solid var(--brand2);border-radius:0 5px 5px 0;padding:.6rem .8rem;font-size:9pt;margin:.6rem 0 1rem;break-inside:avoid}
+ul{margin:.2rem 0 .8rem;padding-left:1.1rem}li{margin-bottom:.22rem;orphans:3;widows:3}
+.tag{font-family:var(--mono);font-size:7.5pt;font-weight:600;padding:.1rem .3rem;border-radius:3px;background:var(--bg2);color:var(--brand2)}
+.rec{border:1px solid var(--brand);border-radius:6px;padding:.9rem 1rem;background:#FAF8FD;break-inside:avoid;margin:.6rem 0 1rem}
+.hdr,.ftr{display:flex;justify-content:space-between;font-size:7.5pt;color:var(--mut);font-family:var(--mono);letter-spacing:.04em}
+.hdr{border-bottom:1px solid var(--brd);padding-bottom:.3rem;margin-bottom:.9rem}
+.ftr{border-top:1px solid var(--brd);padding-top:.3rem}
+.src{font-size:8pt;color:var(--mut);margin-top:1rem;border-top:1px solid var(--brd);padding-top:.5rem}
+</style>
+</head>
+<body>
+<doc-page margin="0.7in">
+  <div class="hdr" slot="header"><span>Grupo Ternova · Dirección Legal + TI</span><span>Confidencial · uso interno</span></div>
+  <div class="ftr" slot="footer"><span>Costeo Portal Legal · v1</span><span>28 julio 2026</span></div>
+
+  <div class="kicker">Estimación de inversión · Julio 2026</div>
+  <h1>¿Cuánto cuesta montar el <em>Portal Legal</em> sobre Microsoft?</h1>
+  <p class="lede">Costeo de llevar el prototipo funcional del Portal Legal a producción usando la plataforma Microsoft ya licenciada por el Grupo, con dos rutas de implementación, requerimientos técnicos y costo total del primer año.</p>
+  <div class="meta"><span>Alcance: <b>portal completo del prototipo</b></span><span>Usuarios: <b>~250 solicitantes · 8 equipo legal</b></span><span>Moneda: <b>USD, precios de lista</b></span><span>Jurisdicciones: <b>GT · HN · SV · CR · MX</b></span></div>
+
+  <h2>1. Qué hay que construir</h2>
+  <p>El prototipo ya define el alcance funcional. Estos son los módulos que pasan a producción:</p>
+  <table>
+    <thead><tr><th>Módulo</th><th>Contenido</th><th class="n">Complejidad</th></tr></thead>
+    <tbody>
+      <tr><td>Autoservicio legal</td><td>6 áreas, 48 documentos, plantillas, checklists, FAQs, cursos y certificaciones</td><td class="n">Baja</td></tr>
+      <tr><td>Catálogo de servicios</td><td>29 servicios con SLA, insumos, flujo de solicitud en 2–3 pasos y folio</td><td class="n">Media</td></tr>
+      <tr><td>Aprobaciones de contratos</td><td>Motor del Cuadro de Autoridades: tipo, monto, condiciones y ruta de aprobación</td><td class="n">Alta</td></tr>
+      <tr><td>Bandeja y asignación</td><td>Cola de entrantes, carga por abogado, urgencias, estados y eliminación con motivo</td><td class="n">Media</td></tr>
+      <tr><td>Tableros</td><td>Macroprocesos, procesos, área operativa, SLA, volumen mensual</td><td class="n">Media</td></tr>
+      <tr><td>Governance y actas</td><td>Marco societario, comités, matriz de aprobaciones, actas con acceso restringido a Junta</td><td class="n">Media</td></tr>
+      <tr><td>Contratos suscritos</td><td>Repositorio con partes, condiciones, terminación, penalidades y alertas de vencimiento</td><td class="n">Media</td></tr>
+      <tr><td>Asistentes de IA</td><td>Dos agentes (governance y contratos) sobre base de conocimiento curada, con citas</td><td class="n">Alta</td></tr>
+      <tr><td>Cadencia y brief diario</td><td>Daily / weekly / monthly, acuerdos rastreables y brief del Gerente legal</td><td class="n">Baja</td></tr>
+      <tr><td>Presupuesto</td><td>Dos bolsas (operación y proyectos), movimientos y aprobación de solicitudes</td><td class="n">Media</td></tr>
+      <tr><td>Proyectos estratégicos</td><td>Portafolio LPM con 5 etapas, gates, hitos, riesgos y presupuesto por proyecto</td><td class="n">Media</td></tr>
+      <tr><td>Seguridad y auditoría</td><td>SSO Entra ID, matriz de permisos por rol, grupo Junta Directiva, bitácora inmutable</td><td class="n">Alta</td></tr>
+    </tbody>
+  </table>
+
+  <h2>2. Requerimientos técnicos obligatorios</h2>
+  <p>Independientemente de la ruta, el portal debe cumplir los estándares corporativos de Ternova (PT-ARQ-004, POL-TIC-001, PL-TIC-001):</p>
+  <ul>
+    <li><b>Identidad</b>: SSO con Microsoft Entra ID, MFA obligatorio, Zero Trust. El acceso a Actas y Comités se resuelve con el grupo de seguridad “Junta Directiva” (no con lógica en la app).</li>
+    <li><b>Integración</b>: publicación exclusiva vía API Gateway (Azure API Management); ninguna llamada directa del navegador a modelos de IA ni a la base de datos.</li>
+    <li><b>Secretos y cifrado</b>: Azure Key Vault, TLS 1.2+, cifrado en reposo, sin credenciales en código.</li>
+    <li><b>Datos</b>: clasificación de la información (actas y contratos = confidencial), Purview para etiquetado y DLP.</li>
+    <li><b>Continuidad</b>: respaldo diario con retención de 30 días y geo-redundancia; RTO 8 h y RPO 24 h para servicio de soporte; prueba de restauración semestral.</li>
+    <li><b>Observabilidad</b>: Application Insights + Log Analytics, alertas de disponibilidad y de consumo de IA.</li>
+    <li><b>IA responsable</b>: modelo desplegado en el tenant (Azure OpenAI), sin envío de datos sensibles a terceros, respuestas con cita a la fuente y bitácora de consultas.</li>
+    <li><b>Entrega</b>: IaC (Bicep/Terraform), ambientes Dev/QA/Prod, pipelines de Azure DevOps, etiquetado de recursos.</li>
+  </ul>
+
+  <h2>3. Dos rutas de implementación</h2>
+  <div class="cards">
+    <div class="card"><div class="t">Ruta A · Low-code</div><div class="v">Power Platform</div><div class="s">Power Apps + SharePoint + Power Automate + Power BI. Menor costo de construcción, mayor costo por usuario.</div></div>
+    <div class="card"><div class="t">Ruta B · Custom</div><div class="v">Azure App Service</div><div class="s">Se reutiliza el front del prototipo + API propia. Sin costo por usuario, más horas de desarrollo.</div></div>
+    <div class="card" style="border-top-color:var(--ok)"><div class="t">V1 recomendada · Híbrida</div><div class="v">Portal + SharePoint</div><div class="s">El portal actual publicado en el tenant, con documentos y solicitudes en SharePoint. Detalle en la sección 8.</div></div>
+  </div>
+
+  <h3>Ruta A — Microsoft 365 y Power Platform</h3>
+  <p>Power Apps para la app y los flujos de aprobación, SharePoint Online como repositorio documental, Power Automate para el motor del Cuadro de Autoridades, Power BI para tableros y Azure OpenAI para los asistentes. Los solicitantes usan formularios y vistas cubiertos por su licencia M365 E3; solo el equipo legal y los aprobadores requieren licencia premium.</p>
+
+  <h3>Ruta B — Aplicación propia en Azure</h3>
+  <p>Se reutiliza el front-end del prototipo (ya construido) y se desarrolla una API en .NET sobre App Service, con Azure SQL para datos transaccionales, Blob Storage para documentos, APIM como puerta de entrada y Azure AI Search para dar contexto a los asistentes. Sin licencias por usuario: el costo es de infraestructura.</p>
+
+  <h2>4. Costo mensual de operación (OPEX)</h2>
+  <h3>Ruta A · Power Platform</h3>
+  <table>
+    <thead><tr><th>Producto</th><th>Dimensionamiento</th><th class="n">Unitario</th><th class="n">Mes</th></tr></thead>
+    <tbody>
+      <tr><td>Power Apps Premium</td><td>10 usuarios (equipo legal + aprobadores clave)</td><td class="n">$20</td><td class="n">$200</td></tr>
+      <tr><td>Power Automate Process</td><td>1 flujo del motor de aprobaciones (sin licencia por usuario)</td><td class="n">$150</td><td class="n">$150</td></tr>
+      <tr><td>Power BI Pro</td><td>12 usuarios (Gerencia legal, Dirección, Admin)</td><td class="n">$14</td><td class="n">$168</td></tr>
+      <tr><td>Dataverse · capacidad extra</td><td>2 GB adicionales de base de datos</td><td class="n">$40</td><td class="n">$80</td></tr>
+      <tr><td>Azure OpenAI (GPT-4o mini)</td><td>~3,000 consultas/mes de los dos asistentes</td><td class="n">—</td><td class="n">$25</td></tr>
+      <tr><td>Azure AI Search · Basic</td><td>Índice de documentos y contratos para los asistentes</td><td class="n">$75</td><td class="n">$75</td></tr>
+      <tr><td>Almacenamiento y respaldos</td><td>SharePoint incluido en E3 + respaldo de terceros</td><td class="n">—</td><td class="n">$60</td></tr>
+      <tr><td>Monitoreo</td><td>Log Analytics + alertas</td><td class="n">—</td><td class="n">$40</td></tr>
+      <tr class="tot"><td colspan="3">Total OPEX Ruta A</td><td class="n">$798</td></tr>
+    </tbody>
+  </table>
+  <div class="note"><b>Nota de licenciamiento:</b> Power Apps Premium lista a $20 por usuario/mes, con tarifa de $12 para volúmenes de 2,000+ licencias. Si en el futuro los 250 solicitantes necesitaran la app completa (y no solo formularios), el OPEX subiría a ~$5,000/mes: conviene mantener la experiencia del solicitante en Teams/SharePoint.</div>
+
+  <h3>Ruta B · Azure custom</h3>
+  <table>
+    <thead><tr><th>Servicio</th><th>Dimensionamiento</th><th class="n">Mes</th></tr></thead>
+    <tbody>
+      <tr><td>App Service P1v3 (Linux)</td><td>2 instancias con slot de staging (HA)</td><td class="n">$230</td></tr>
+      <tr><td>Azure SQL Database</td><td>General Purpose serverless, 2 vCore, geo-backup</td><td class="n">$185</td></tr>
+      <tr><td>API Management Basic v2</td><td>Puerta de entrada única con SLA</td><td class="n">$150</td></tr>
+      <tr><td>Blob Storage</td><td>150 GB de documentos, capa fría para históricos</td><td class="n">$30</td></tr>
+      <tr><td>Azure AI Search · Basic</td><td>Contexto documental de los asistentes</td><td class="n">$75</td></tr>
+      <tr><td>Azure OpenAI (GPT-4o mini)</td><td>~3,000 consultas/mes; $0.15 / $0.60 por millón de tokens</td><td class="n">$25</td></tr>
+      <tr><td>Front Door Standard + WAF</td><td>Publicación segura y caché</td><td class="n">$45</td></tr>
+      <tr><td>Key Vault, App Insights, Log Analytics</td><td>Secretos, telemetría y alertas</td><td class="n">$70</td></tr>
+      <tr><td>Respaldos y DR</td><td>Retención 30 días, restauración geo-redundante</td><td class="n">$40</td></tr>
+      <tr><td>Ambientes Dev/QA</td><td>SKU reducidos, apagado nocturno</td><td class="n">$120</td></tr>
+      <tr class="tot"><td colspan="2">Total OPEX Ruta B</td><td class="n">$970</td></tr>
+    </tbody>
+  </table>
+  <div class="note">Sin licencias por usuario: el OPEX no crece con la adopción. Con Reserved Instances a 1 año (App Service y SQL) el total baja a <b>~$780/mes</b>.</div>
+
+  <h2>5. Costo de construcción (inversión inicial)</h2>
+  <table>
+    <thead><tr><th>Rol</th><th class="n">Ruta A · horas</th><th class="n">Ruta B · horas</th></tr></thead>
+    <tbody>
+      <tr><td>Arquitecto de soluciones</td><td class="n">60</td><td class="n">100</td></tr>
+      <tr><td>Desarrollo (Power Platform / .NET + front)</td><td class="n">420</td><td class="n">820</td></tr>
+      <tr><td>Integración, identidad y seguridad</td><td class="n">80</td><td class="n">140</td></tr>
+      <tr><td>Inteligencia de negocios (tableros)</td><td class="n">70</td><td class="n">90</td></tr>
+      <tr><td>QA y pruebas de aceptación</td><td class="n">70</td><td class="n">130</td></tr>
+      <tr><td>Gestión del proyecto y análisis funcional</td><td class="n">120</td><td class="n">160</td></tr>
+      <tr><td>Migración documental y capacitación</td><td class="n">80</td><td class="n">80</td></tr>
+      <tr class="tot"><td>Total de horas</td><td class="n">900</td><td class="n">1,520</td></tr>
+    </tbody>
+  </table>
+  <table>
+    <thead><tr><th>Escenario de ejecución</th><th class="n">Tarifa/hora</th><th class="n">Ruta A</th><th class="n">Ruta B</th></tr></thead>
+    <tbody>
+      <tr><td>Equipo interno de TI Ternova (costo cargado)</td><td class="n">$30</td><td class="n">$27,000</td><td class="n">$45,600</td></tr>
+      <tr><td>Mixto: interno + consultoría puntual</td><td class="n">$48</td><td class="n">$43,200</td><td class="n">$73,000</td></tr>
+      <tr><td>Consultoría externa (partner Microsoft, región)</td><td class="n">$70</td><td class="n">$63,000</td><td class="n">$106,400</td></tr>
+    </tbody>
+  </table>
+
+  <h2>6. Costo total del primer año</h2>
+  <table>
+    <thead><tr><th>Concepto</th><th class="n">V1 · Híbrida</th><th class="n">Ruta A (V2)</th><th class="n">Ruta B</th></tr></thead>
+    <tbody>
+      <tr><td>Construcción (equipo interno)</td><td class="n">$10,800</td><td class="n">$27,000</td><td class="n">$45,600</td></tr>
+      <tr><td>Operación 12 meses</td><td class="n">$1,188</td><td class="n">$9,576</td><td class="n">$11,640</td></tr>
+      <tr><td>Firma digital (8 usuarios, opcional)</td><td class="n">—</td><td class="n">$3,840</td><td class="n">$3,840</td></tr>
+      <tr><td>Contingencia 15%</td><td class="n">$1,798</td><td class="n">$6,062</td><td class="n">$9,162</td></tr>
+      <tr class="tot"><td>Total año 1 (interno)</td><td class="n">$13,786</td><td class="n">$46,478</td><td class="n">$70,242</td></tr>
+      <tr><td>Total año 1 con consultoría externa</td><td class="n">$30,300</td><td class="n">$87,900</td><td class="n">$140,000</td></tr>
+      <tr><td>Años siguientes (solo operación)</td><td class="n">$1,188</td><td class="n">$13,400</td><td class="n">$15,500</td></tr>
+    </tbody>
+  </table>
+
+  <h2>7. Recomendación</h2>
+  <div class="rec">
+    <p style="margin-bottom:.4rem"><b>Arrancar ahora con la V1 híbrida ($13,800 · 6–8 semanas) y migrar a la Ruta A (Power Platform) como V2 cuando se cumplan los detonadores.</b></p>
+    <p style="margin:0">La V1 conserva el portal ya construido y deja documentos y solicitudes en SharePoint: valida la adopción y el Cuadro de Autoridades con datos reales por una fracción del costo y sin trabajo desechable —bibliotecas, metadatos, listas y flujos se reutilizan íntegros. La <b>Ruta A es el destino de la V2</b> (+$32,000: $27,000 de construcción y $5,000 de migración de datos, más ~$800/mes) y se activa cuando Legal necesite autonomía sobre formularios y rutas, o cuando el flujo requiera delegaciones, suplencias y escalamientos por SLA. La <b>Ruta B</b> solo se justifica si el portal debe abrirse a contrapartes externas o si el motor de aprobaciones excede lo que Power Automate soporta con comodidad. La secuencia completa está en la sección 9.</p>
+  </div>
+
+  <h3>Cronograma</h3>
+  <table>
+    <thead><tr><th>Versión y fase</th><th>Entregable</th><th class="n">Semanas</th></tr></thead>
+    <tbody>
+      <tr><td>V1 · 1 Publicación</td><td>Portal en el tenant con SSO Entra ID, dominio propio y bibliotecas de SharePoint organizadas</td><td class="n">1–3</td></tr>
+      <tr><td>V1 · 2 Solicitudes</td><td>Listas y flujos de ingreso con folio, SLA, notificación y bandeja</td><td class="n">4–6</td></tr>
+      <tr><td>V1 · 3 IA y auditoría</td><td>Proxy de IA con Azure OpenAI, bitácora persistente, capacitación y salida a producción</td><td class="n">7–8</td></tr>
+      <tr><td>Medición</td><td>Tres meses de operación medida contra los criterios de éxito de la V1</td><td class="n">9–20</td></tr>
+      <tr><td>V2 · 1 Fundaciones</td><td>Dataverse, matriz de permisos, IaC y migración de los datos de la V1</td><td class="n">21–24</td></tr>
+      <tr><td>V2 · 2 Aprobaciones</td><td>Flujo multinivel del Cuadro de Autoridades con delegación y escalamiento</td><td class="n">25–28</td></tr>
+      <tr><td>V2 · 3 Gestión y cierre</td><td>Power BI, alertas de vencimiento, firma digital, app móvil y producción</td><td class="n">29–34</td></tr>
+    </tbody>
+  </table>
+
+  <h2>8. Ruta híbrida: portal ligero + documentos en SharePoint</h2>
+  <p>Es viable y es la opción más barata: se conserva el portal tal como está construido (HTML/JS, sin plataforma low-code) y <b>SharePoint queda como única fuente de los documentos</b>. Ningún archivo se copia ni se almacena en el portal: el portal muestra el catálogo y enlaza a la biblioteca, y SharePoint sigue gobernando versiones, permisos, etiquetado Purview y retención.</p>
+  <div class="note"><b>Aclaración importante:</b> el entorno donde hoy se diseña el portal (Claude) es la herramienta de <b>diseño y prototipado</b>, no la plataforma de producción: no tiene SSO corporativo, base de datos ni bitácora persistente, por lo que no cumple POL-TIC-001 para datos reales. Lo que se conserva es el <b>código del portal</b>, que se publica en el tenant de Ternova como sitio propio.</p></div>
+  <h3>Cómo queda la arquitectura</h3>
+  <table>
+    <thead><tr><th>Capa</th><th>Solución</th><th>Comentario</th></tr></thead>
+    <tbody>
+      <tr><td>Portal (front-end)</td><td>Azure Static Web Apps, o página de SharePoint con el portal embebido</td><td>Es el código actual, sin reescribirlo</td></tr>
+      <tr><td>Identidad</td><td>Autenticación integrada de Entra ID</td><td>SSO y grupo “Junta Directiva” resuelven el acceso a Actas</td></tr>
+      <tr><td>Documentos</td><td>Bibliotecas de SharePoint Online por área legal</td><td>Fuente única; el portal solo consulta y enlaza vía Microsoft Graph</td></tr>
+      <tr><td>Ingreso de solicitudes</td><td>Listas de SharePoint + Power Automate</td><td>Folio, notificación al equipo legal y SLA</td></tr>
+      <tr><td>Aprobaciones de contratos</td><td>Power Automate con el Cuadro de Autoridades</td><td>El cálculo de la ruta ya está implementado en el portal</td></tr>
+      <tr><td>Asistentes de IA</td><td>Azure Function como proxy + Azure OpenAI</td><td>Indispensable: la llave del modelo nunca puede estar en el navegador</td></tr>
+      <tr><td>Tableros</td><td>Los del portal, o Power BI si se requiere análisis</td><td>Datos leídos de las listas</td></tr>
+      <tr><td>Auditoría</td><td>Lista de auditoría en SharePoint + Purview Audit Log</td><td>Bitácora inmutable de descargas y aprobaciones</td></tr>
+    </tbody>
+  </table>
+  <h3>Costo de la ruta híbrida</h3>
+  <table>
+    <thead><tr><th>Concepto</th><th>Detalle</th><th class="n">Mes</th></tr></thead>
+    <tbody>
+      <tr><td>Azure Static Web Apps Standard</td><td>Hospedaje, dominio propio y autenticación Entra ID</td><td class="n">$9</td></tr>
+      <tr><td>Azure Functions (Consumption)</td><td>Proxy de IA y llamadas a Graph</td><td class="n">$15</td></tr>
+      <tr><td>Azure OpenAI (GPT-4o mini)</td><td>~3,000 consultas/mes de los dos asistentes</td><td class="n">$25</td></tr>
+      <tr><td>Power Automate por usuario</td><td>2 licencias para los flujos de solicitud y aprobación</td><td class="n">$30</td></tr>
+      <tr><td>SharePoint Online</td><td>Incluido en Microsoft 365 E3</td><td class="n">$0</td></tr>
+      <tr><td>App Insights / Log Analytics</td><td>Telemetría y alertas</td><td class="n">$20</td></tr>
+      <tr class="tot"><td colspan="2">Total OPEX ruta híbrida</td><td class="n">$99</td></tr>
+    </tbody>
+  </table>
+  <table>
+    <thead><tr><th>Construcción</th><th class="n">Horas</th><th class="n">Interno ($30/h)</th></tr></thead>
+    <tbody>
+      <tr><td>Publicación, SSO y dominio</td><td class="n">40</td><td class="n">$1,200</td></tr>
+      <tr><td>Integración con SharePoint (Graph: documentos y listas)</td><td class="n">100</td><td class="n">$3,000</td></tr>
+      <tr><td>Flujos de solicitud, SLA y aprobaciones en Power Automate</td><td class="n">90</td><td class="n">$2,700</td></tr>
+      <tr><td>Proxy de IA, auditoría y hardening de seguridad</td><td class="n">70</td><td class="n">$2,100</td></tr>
+      <tr><td>Organización de bibliotecas, metadatos y pruebas</td><td class="n">60</td><td class="n">$1,800</td></tr>
+      <tr class="tot"><td>Total</td><td class="n">360</td><td class="n">$10,800</td></tr>
+    </tbody>
+  </table>
+  <div class="cards">
+    <div class="card"><div class="t">Año 1 (con 15% contingencia)</div><div class="v">$13,800</div><div class="s">Contra $46,500 de la Ruta A (V2) y $70,200 de la Ruta B</div></div>
+    <div class="card"><div class="t">Operación mensual</div><div class="v">$99</div><div class="s">No crece con el número de usuarios</div></div>
+    <div class="card"><div class="t">Tiempo a producción</div><div class="v">6–8 sem.</div><div class="s">El front-end ya está construido</div></div>
+  </div>
+  <h3>Qué se gana y qué se cede</h3>
+  <ul>
+    <li><b>Se gana:</b> costo mínimo, salida rápida, cero duplicación documental, gobierno de documentos donde debe estar (SharePoint con Purview y retención), y sin licencias premium por usuario.</li>
+    <li><b>Se cede:</b> el mantenimiento queda en manos de TI con código propio (no low-code), los tableros avanzados y las alertas complejas requieren desarrollo, y la app móvil nativa no está incluida (funciona como web responsiva).</li>
+    <li><b>No negociable:</b> autenticación Entra ID en el sitio, proxy servidor para la IA, y bitácora de auditoría persistente. Sin esos tres elementos el portal no puede operar con datos reales.</li>
+  </ul>
+
+  <h2>9. Hoja de ruta: primera versión, siguiente y modelo final</h2>
+  <p>Tres versiones, cada una con un propósito distinto: la primera valida el uso, la segunda industrializa el flujo y la tercera convierte el portal en la plataforma de operación legal del Grupo. Nada de lo construido en una versión se descarta en la siguiente.</p>
+  <table>
+    <thead><tr><th>Dimensión</th><th>V1 · Validar</th><th>V2 · Industrializar</th><th>V3 · Plataforma</th></tr></thead>
+    <tbody>
+      <tr><td>Cuándo</td><td>Mes 0–2 + 3 meses de medición</td><td>Mes 5–9</td><td>Mes 12–24</td></tr>
+      <tr><td>Base tecnológica</td><td>Portal actual + SharePoint + Power Automate</td><td>Power Platform (Power Apps + Dataverse + Power BI)</td><td>Dataverse como sistema de registro + CLM + Azure OpenAI con RAG</td></tr>
+      <tr><td>Inversión</td><td class="n">$13,800</td><td class="n">+$32,000 <span class="tag">1</span></td><td class="n">+$85,000</td></tr>
+      <tr><td>Operación mensual</td><td class="n">$99</td><td class="n">$800</td><td class="n">$2,400</td></tr>
+      <tr><td>Dueño del mantenimiento</td><td>TI (código)</td><td>TI + Legal (low-code)</td><td>Legal Ops con soporte de TI</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:8.5pt;color:var(--mut);margin-top:-.6rem"><span class="tag">1</span> La V2 suma <b>$27,000</b> de construcción de la Ruta A (sección 6) más <b>$5,000</b> de migración de los datos y flujos que la V1 dejó en SharePoint hacia Dataverse.</p>
+
+  <h3>V1 · Primera versión — validar el uso (mes 0–2)</h3>
+  <p><b>Propósito:</b> comprobar que la gente usa el autoservicio y que el catálogo y el Cuadro de Autoridades reflejan la realidad, antes de comprometer plataforma.</p>
+  <ul>
+    <li><b>Incluye:</b> autoservicio de las 6 áreas con documentos en SharePoint; catálogo de 29 servicios con SLA; ingreso de solicitudes con folio y notificación; cálculo de la ruta de aprobación por tipo y monto con alerta al gestor; registro de contratos suscritos; cadencia y brief diario; presupuesto en modo seguimiento; proyectos LPM; asistentes de IA sobre base de conocimiento curada; bitácora de auditoría.</li>
+    <li><b>No incluye:</b> aprobación en línea con delegación y suplencias, integración al ERP, firma digital en el flujo, app móvil nativa, IA sobre el texto completo de los documentos.</li>
+    <li><b>Criterios de éxito para pasar a V2:</b> 60% de las solicitudes entran por el portal; 40% de las consultas se resuelven en autoservicio; 100% de los documentos vigentes viven en SharePoint; SLA medido durante tres meses consecutivos.</li>
+  </ul>
+
+  <h3>V2 · Siguiente versión — industrializar el flujo (mes 3–9)</h3>
+  <p><b>Propósito:</b> convertir el cálculo de aprobaciones en un flujo real con responsables, tiempos y trazabilidad, y sacar a Legal de la dependencia de TI para cambios cotidianos.</p>
+  <ul>
+    <li><b>Agrega:</b> aprobación en línea multinivel conforme al Cuadro de Autoridades, con delegación, suplencia y escalamiento automático por vencimiento de SLA; Dataverse como modelo de datos único; Power BI para tableros de operación y de valor; alertas automáticas de vencimiento contractual y regulatorio; firma digital integrada al flujo; app móvil para aprobadores; formularios y SLA editables por Legal sin desarrollo.</li>
+    <li><b>Detonadores del salto:</b> más de 40 usuarios diarios; necesidad de delegaciones o escalamientos por tiempo; Legal requiere autonomía para cambiar formularios y rutas; se necesita firma digital o app móvil.</li>
+  </ul>
+
+  <h3>V3 · Modelo final — plataforma de operación legal (mes 12–24)</h3>
+  <p><b>Propósito:</b> que el área legal opere sobre un sistema de registro propio, integrado al negocio y medido por valor, no por volumen de solicitudes.</p>
+  <ul>
+    <li><b>Sistema de registro:</b> Dataverse como fuente única de solicitudes, contratos, proyectos y presupuesto; SharePoint conserva el documento, Dataverse conserva el dato.</li>
+    <li><b>CLM completo:</b> ciclo de vida contractual de punta a punta (negociación, cláusulas, firma, obligaciones, renovación) — corresponde al proyecto PRY-2026-02, con su propio presupuesto de $66,000.</li>
+    <li><b>IA de segunda generación:</b> Azure OpenAI con RAG sobre el repositorio real mediante Azure AI Search, en lugar de base de conocimiento curada; respuestas con cita al documento y a la cláusula, bajo la política PT-IA-003 y con bitácora de consultas.</li>
+    <li><b>Integración con el negocio:</b> presupuesto y provisiones sincronizados con el ERP; servicios legales expuestos a otras áreas como APIs a través del API Gateway (validación de contrapartes, verificación de autoridad, estado de contratos).</li>
+    <li><b>Medición de valor:</b> costo por contrato, ciclo de firma, ahorro por autoservicio, exposición por litigio, ejecución presupuestaria por macroproceso.</li>
+    <li><b>Resiliencia:</b> alta disponibilidad multi-región, RTO 4 h y RPO 1 h para el servicio crítico, prueba de restauración semestral documentada.</li>
+  </ul>
+  <div class="note"><b>Regla que sostiene la hoja de ruta:</b> cada versión debe estar en producción y medida antes de aprobar la siguiente. Si V1 no alcanza sus criterios de éxito, el problema no es de plataforma y no se resuelve comprando licencias.</div>
+
+  <h2>10. Supuestos y variables de riesgo del costo</h2>
+  <ul>
+    <li>Se asume que el Grupo ya tiene <b>Microsoft 365 E3</b> (incluye Entra ID P1, SharePoint y Teams): el costo de esas licencias no se carga al proyecto.</li>
+    <li>Precios de lista en USD sin descuento por Enterprise Agreement ni compromiso MACC; un EA suele bajar el Azure entre 10% y 25%.</li>
+    <li>El costo de IA es marginal con GPT-4o mini. Si se usara GPT-4o para todo, subiría de ~$25 a ~$60/mes con el mismo volumen.</li>
+    <li>La migración documental está estimada en 80 horas para ~250 documentos; un volumen mayor o documentos sin metadatos incrementan esta línea.</li>
+    <li>No incluye: licencias de firma digital masiva, CLM de terceros, ni el proyecto PRY-2026-02 (CLM), que tiene su propio presupuesto de $66,000 en el portafolio.</li>
+    <li>Antes de aprobar, validar el OPEX en la <b>Azure Pricing Calculator</b> con las SKU y la región definitivas (East US 2 o South Central US para latencia regional).</li>
+  </ul>
+
+  <div class="src">Referencias de precios: página oficial de Power Platform (Power Apps Premium $20/usuario/mes; $12 con 2,000+ licencias; Power Automate Process $150/flujo/mes; Power BI Pro $14/usuario/mes) y Azure OpenAI Service (GPT-4o $2.50 / $10 y GPT-4o mini $0.15 / $0.60 por millón de tokens de entrada/salida). Precios de lista consultados en julio 2026, sujetos a cambio y a los descuentos del acuerdo con Microsoft.</div>
+</doc-page>
+<script src="doc-page.js"></script>
+<template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><rect width="120" height="120" fill="#2E1065"/><text x="60" y="72" font-family="Inter,sans-serif" font-size="40" font-weight="700" fill="#fff" text-anchor="middle">$</text></svg></template>
+</body>
+</html>
