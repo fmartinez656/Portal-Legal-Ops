@@ -53,7 +53,7 @@ const state = {
 function canGovBoard() { return state.junta || state.role === 'mgr'; }
 
 /* Estado de edición de documentación (en sesión) */
-const docState = { deleted: new Set(), rename: {} };
+const docState = { deleted: new Set(), rename: {}, location: {} };
 const dkey = (name) => (state.area || '') + '::' + name;
 
 const $  = (s, r = document) => r.querySelector(s);
@@ -504,16 +504,19 @@ function docGrid(items, search) {
     const key = dkey(d.name);
     const name = docState.rename[key] || d.name;
     const esc = name.replace(/'/g, '\\\'');
+    const loc = key in docState.location ? docState.location[key] : (d.physicalLocation || '');
+    const locEsc = loc.replace(/'/g, '\\\'');
     return `
     <div class="doc-card${editable ? ' editable' : ''}" data-name="${name.toLowerCase()}" onclick="toast('Descargando “${esc}”')">
       ${editable ? `<div class="doc-acts">
-        <button class="doc-act" title="Actualizar documento" onclick="event.stopPropagation();openDocModal('edit','${key}','${esc}')"><i class="ti ti-pencil"></i></button>
+        <button class="doc-act" title="Actualizar documento" onclick="event.stopPropagation();openDocModal('edit','${key}','${esc}','${locEsc}')"><i class="ti ti-pencil"></i></button>
         <button class="doc-act del" title="Eliminar documento" onclick="event.stopPropagation();openDocModal('del','${key}','${esc}')"><i class="ti ti-trash"></i></button>
       </div>` : ''}
       <div class="doc-card-top">
         <div class="doc-ic"><i class="ti ${d.icon}"></i></div>
         <div><div class="doc-card-name">${name}</div><div class="doc-card-meta">${d.meta}</div></div>
       </div>
+      ${loc ? `<div class="doc-phys"><i class="ti ti-map-pin"></i>${loc}</div>` : ''}
       <span class="doc-tag"><i class="ti ti-tag"></i>${d.tag}</span>
     </div>`;
   }).join('');
@@ -773,7 +776,7 @@ function submitModal(e) {
 /* ───────── EDICIÓN DE DOCUMENTACIÓN ───────── */
 const AREA_NAME = { risk: 'Riesgo y compliance', adv: 'Asesoría legal', tx: 'Transacciones', lit: 'Litigio y arbitraje', edu: 'Educación legal', gov: 'Governance' };
 
-function openDocModal(mode, key, name) {
+function openDocModal(mode, key, name, loc) {
   if (!can('docEdit')) return;
   $('#mBg').classList.add('on');
   document.body.style.overflow = 'hidden';
@@ -787,6 +790,8 @@ function openDocModal(mode, key, name) {
       <form class="mform" onsubmit="applyDocEdit(event,'${key}')">
         <div class="fg"><label>Nombre del documento</label>
           <input class="fc" id="docName" required value="${name}"></div>
+        <div class="fg"><label>Ubicación física <span class="fg-opt">(opcional)</span></label>
+          <input class="fc" id="docLoc" placeholder="Ej. Oficina legal, gabeta 3, carpeta 1" value="${loc || ''}"></div>
         <div class="fg"><label>Nota de versión</label>
           <textarea class="fc" id="docNote" required placeholder="Describe qué cambió en esta versión…"></textarea></div>
         <div class="sla-info"><i class="ti ti-history"></i>El cambio quedará registrado a tu nombre en el historial del portal.</div>
@@ -811,6 +816,7 @@ function applyDocEdit(e, key) {
   const newName = $('#docName').value.trim();
   const note = $('#docNote').value.trim();
   docState.rename[key] = newName;
+  docState.location[key] = $('#docLoc').value.trim();
   logChange('edit', newName, note);
   closeModal();
   rerenderTab();

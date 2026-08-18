@@ -126,17 +126,17 @@ const AUTO = {
       { name: 'Comité Ejecutivo', freq: 'Semanal', prox: '7 Jun 2026', chair: 'CEO' },
     ],
     actas: [
-      { name: 'Acta Junta Directiva — Mar 2026', meta: 'Aprobada · 12 Mar 2026', tag: 'Confidencial', icon: 'ti-file-description' },
-      { name: 'Acta Comité Riesgos — May 2026', meta: 'Aprobada · 28 May 2026', tag: 'Restringida', icon: 'ti-file-description' },
+      { name: 'Acta Junta Directiva — Mar 2026', meta: 'Aprobada · 12 Mar 2026', tag: 'Confidencial', icon: 'ti-file-description', physicalLocation: 'Oficina legal, gabeta 4, carpeta Actas JD 2026' },
+      { name: 'Acta Comité Riesgos — May 2026', meta: 'Aprobada · 28 May 2026', tag: 'Restringida', icon: 'ti-file-description', physicalLocation: 'Oficina legal, gabeta 5, carpeta Comité de Riesgos' },
       { name: 'Acta Comité Auditoría — May 2026', meta: 'Pendiente firma · 30 May 2026', tag: 'Pendiente', icon: 'ti-file-description' },
-      { name: 'Acta Comité Cumplimiento — Abr 2026', meta: 'Aprobada · 15 Abr 2026', tag: 'Confidencial', icon: 'ti-file-description' },
+      { name: 'Acta Comité Cumplimiento — Abr 2026', meta: 'Aprobada · 15 Abr 2026', tag: 'Confidencial', icon: 'ti-file-description', physicalLocation: 'Oficina legal, gabeta 5, carpeta Comité de Cumplimiento' },
     ],
     policies: [
-      { name: 'POL-001 · Código de ética y conducta', meta: 'Rev. 3 · Ene 2026', tag: 'Vigente', icon: 'ti-shield-check' },
-      { name: 'POL-002 · Política anticorrupción (FCPA)', meta: 'Rev. 2 · Nov 2025', tag: 'Vigente', icon: 'ti-shield-check' },
+      { name: 'POL-001 · Código de ética y conducta', meta: 'Rev. 3 · Ene 2026', tag: 'Vigente', icon: 'ti-shield-check', physicalLocation: 'Oficina legal, gabeta 1, carpeta 1' },
+      { name: 'POL-002 · Política anticorrupción (FCPA)', meta: 'Rev. 2 · Nov 2025', tag: 'Vigente', icon: 'ti-shield-check', physicalLocation: 'Oficina legal, gabeta 1, carpeta 2' },
       { name: 'POL-003 · Política de conflicto de interés', meta: 'Rev. 4 · Feb 2026', tag: 'Vigente', icon: 'ti-shield-check' },
       { name: 'POL-004 · Política de protección de datos', meta: 'Rev. 5 · Mar 2026', tag: 'Vigente', icon: 'ti-shield-check' },
-      { name: 'POL-005 · Política de operaciones con partes relacionadas', meta: 'Rev. 1 · Oct 2025', tag: 'Vigente', icon: 'ti-shield-check' },
+      { name: 'POL-005 · Política de operaciones con partes relacionadas', meta: 'Rev. 1 · Oct 2025', tag: 'Vigente', icon: 'ti-shield-check', physicalLocation: 'Oficina legal, gabeta 2, carpeta 3' },
       { name: 'POL-006 · Política de retención de documentos', meta: 'Rev. 2 · Dic 2025', tag: 'Vigente', icon: 'ti-shield-check' },
     ],
     faq: [
@@ -190,7 +190,7 @@ const SVCS = {
 const AREAS = {
   risk: { cls: 'r', icon: 'ti-shield-half', title: 'Riesgo y compliance', sub: 'Políticas, calendarios, autoevaluación y análisis de riesgo con abogado.', tabs: ['docs', 'checklist', 'svcs', 'faq'] },
   adv: { cls: 'a', icon: 'ti-message-dots', title: 'Asesoría legal', sub: 'Opiniones previas, precedentes y servicios de asesoría formal.', tabs: ['docs', 'svcs', 'faq'] },
-  tx: { cls: 't', icon: 'ti-file-text', title: 'Gestión de transacciones', sub: 'Plantillas preaprobadas, contratos suscritos, seguimiento de firmas y revisión con abogado.', tabs: ['templates', 'contracts', 'authority', 'agent', 'timeline', 'svcs', 'faq'] },
+  tx: { cls: 't', icon: 'ti-file-text', title: 'Gestión de transacciones', sub: 'Plantillas preaprobadas, contratos suscritos, seguimiento de firmas y revisión con abogado.', tabs: ['agent', 'templates', 'contracts', 'authority', 'timeline', 'svcs', 'faq'] },
   lit: { cls: 'l', icon: 'ti-gavel', title: 'Litigio y arbitraje', sub: 'Expedientes, calendario de audiencias, provisiones y defensa judicial.', tabs: ['docs', 'calendar', 'svcs', 'faq'] },
   edu: { cls: 'e', icon: 'ti-school', title: 'Educación legal', sub: 'Cursos, certificaciones, materiales y programas de capacitación.', tabs: ['courses', 'certs', 'materials', 'svcs', 'faq'] },
   gov: { cls: 'g', icon: 'ti-building-bank', title: 'Governance', sub: 'Marco corporativo, comités, matriz de aprobaciones, políticas y actas.', tabs: ['agent', 'docs', 'matrix', 'committees', 'policies', 'actas', 'faq'] },

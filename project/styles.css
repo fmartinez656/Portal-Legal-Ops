@@ -279,6 +279,8 @@ h1,h2,h3,h4{font-family:var(--head);font-weight:600;letter-spacing:-.01em;line-h
 .doc-ic{width:38px;height:38px;border-radius:var(--r-sm);background:var(--brand-tint);color:var(--brand);display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
 .doc-card-name{font-size:13.5px;font-weight:600;color:var(--txt);line-height:1.3}
 .doc-card-meta{font-size:11.5px;color:var(--mut);font-family:var(--mono);font-variant-numeric:tabular-nums}
+.doc-phys{display:flex;align-items:flex-start;gap:5px;font-size:11.5px;color:var(--mut);line-height:1.4}
+.doc-phys i{font-size:13px;color:var(--dim);flex-shrink:0;margin-top:1px}
 .doc-tag{display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:600;padding:3px 9px;border-radius:20px;background:var(--bg3);color:var(--mut);width:fit-content}
 
 .srch-box{position:relative;margin-bottom:1.1rem;max-width:480px}
@@ -362,6 +364,7 @@ h1,h2,h3,h4{font-family:var(--head);font-weight:600;letter-spacing:-.01em;line-h
 .mform{animation:fu .3s ease both}
 .fg{margin-bottom:1rem}
 .fg label{display:block;font-size:12px;font-weight:600;color:var(--txt);margin-bottom:.4rem}
+.fg-opt{color:var(--mut);font-weight:400}
 .fc{width:100%;background:var(--sur);border:1px solid var(--brd2);border-radius:var(--r-sm);padding:10px 12px;font-size:13px;color:var(--txt);outline:none;transition:all .18s}
 .fc:focus{border-color:var(--brand-3);box-shadow:0 0 0 3px var(--brand-tint)}
 .fc::placeholder{color:var(--dim)}
