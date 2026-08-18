@@ -514,7 +514,7 @@ const INTEGRATIONS = [
   { name: 'SharePoint legal', meta: 'Repositorio documental', st: 'on', icon: 'ti-folder' },
   { name: 'Power BI', meta: 'Exportación de tableros', st: 'off', icon: 'ti-chart-dots' },
 ];
-const JURISDICTIONS = ['Guatemala', 'Honduras', 'El Salvador', 'Costa Rica', 'México'];
+const JURISDICTIONS = ['Guatemala', 'Honduras', 'El Salvador', 'Costa Rica', 'México', 'Panamá', 'Nicaragua', 'Vietnam', 'Islas Británicas'];
 
 
 /* ===========================================================================

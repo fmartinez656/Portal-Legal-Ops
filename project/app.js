@@ -25,13 +25,13 @@ function isBoardEmail(email) { return !!email && boardEmails().includes(email.to
 /* Capacidades por rol — fuente única de verdad del modelo de permisos */
 const CAPS = {
   req: [],
-  law: ['sla', 'inbox', 'inboxOwn', 'docEdit', 'history', 'cadence', 'projects'],
-  mgr: ['sla', 'inbox', 'inboxTeam', 'assign', 'docEdit', 'history', 'dash', 'audit', 'cadence', 'budget', 'budgetApprove', 'projects'],
-  adm: ['sla', 'inbox', 'inboxRead', 'docEdit', 'history', 'dash', 'audit', 'admin', 'cadence', 'budget', 'projects'],
+  law: ['sla', 'inbox', 'inboxOwn', 'docEdit', 'history', 'cadence', 'projects', 'triage', 'regcal'],
+  mgr: ['sla', 'inbox', 'inboxTeam', 'assign', 'triage', 'regcal', 'docEdit', 'history', 'dash', 'audit', 'cadence', 'budget', 'budgetApprove', 'projects'],
+  adm: ['sla', 'inbox', 'inboxRead', 'docEdit', 'history', 'dash', 'audit', 'admin', 'cadence', 'budget', 'projects', 'triage', 'regcal'],
 };
 function can(c) { return !!(state.role && CAPS[state.role].includes(c)); }
 /* Cada vista protegida exige una capacidad */
-const VIEW_CAP = { sla: 'sla', inbox: 'inbox', dash: 'dash', history: 'history', audit: 'audit', admin: 'admin', cadence: 'cadence', budget: 'budget', projects: 'projects' };
+const VIEW_CAP = { regcal: 'regcal', triage: 'triage', sla: 'sla', inbox: 'inbox', dash: 'dash', history: 'history', audit: 'audit', admin: 'admin', cadence: 'cadence', budget: 'budget', projects: 'projects' };
 /* ¿El usuario crea solicitudes propias? Solo el solicitante. El equipo legal las recibe. */
 function isRequester() { return state.role === 'req'; }
 
@@ -155,6 +155,8 @@ function nav(view, area) {
     if (view === 'admin') renderAdmin();
     if (view === 'projects') renderProjects();
     if (view === 'cadence') renderCadence();
+    if (view === 'triage') renderTriage();
+    if (view === 'regcal') renderRegcal();
     if (view === 'budget') renderBudget();
   }
 
@@ -292,7 +294,7 @@ function renderTab(key, tab) {
     case 'courses':    panel.innerHTML = docGrid(AUTO[key].courses); break;
     case 'checklist':  panel.innerHTML = checklistBlock(key); initChecklist(panel); break;
     case 'certs':      panel.innerHTML = certsBlock(key); animateCertBars(panel); break;
-    case 'timeline':   panel.innerHTML = timelineBlock(key); break;
+    case 'timeline':   panel.innerHTML = (key === 'tx' && typeof clmBlock === 'function') ? clmBlock() : timelineBlock(key); break;
     case 'calendar':   panel.innerHTML = calendarBlock(key); break;
     case 'matrix':     panel.innerHTML = matrixBlock(key); break;
     case 'committees': panel.innerHTML = canGovBoard() ? committeesBlock(key) : govLocked('committees'); break;

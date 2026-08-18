@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.7.0/dist/tabler-icons.min.css">
-<link rel="stylesheet" href="styles.css?v=20260728b">
+<link rel="stylesheet" href="styles.css?v=20260817d">
 <script>
   (function(){try{var t=localStorage.getItem('pl-theme');if(t==='dark'||t==='light')document.documentElement.dataset.theme=t;}catch(e){}})();
 </script>
@@ -42,7 +42,7 @@
       <div class="lhero-stats">
         <div class="lhero-stat"><b>6</b><span>áreas legales</span></div>
         <div class="lhero-stat"><b>29</b><span>servicios</span></div>
-        <div class="lhero-stat"><b>5</b><span>jurisdicciones</span></div>
+        <div class="lhero-stat"><b>9</b><span>jurisdicciones</span></div>
       </div>
     </div>
     <div class="lform">
@@ -104,6 +104,7 @@
       <a class="ni" data-nav="home" onclick="nav('home')"><i class="ti ti-layout-grid"></i>Inicio</a>
       <a class="ni" data-nav="reqs" onclick="nav('reqs')"><i class="ti ti-file-stack"></i>Mis solicitudes</a>
       <a class="ni" data-nav="sla" data-cap="sla" onclick="nav('sla')"><i class="ti ti-bell"></i>Alertas SLA</a>
+      <a class="ni" data-nav="regcal" data-cap="regcal" onclick="nav('regcal')"><i class="ti ti-calendar-event"></i><span class="ni-lbl">Calendario regulatorio</span></a>
     </div>
     <div class="sb-s">
       <div class="sb-l">Áreas legales</div>
@@ -123,9 +124,10 @@
       <a class="ni" data-nav="history" data-cap="history" onclick="nav('history')"><i class="ti ti-versions"></i><span class="ni-lbl">Historial de cambios</span></a>
       <a class="ni" data-nav="audit" data-cap="audit" onclick="nav('audit')"><i class="ti ti-history"></i><span class="ni-lbl">Auditoría</span></a>
     </div>
-    <div class="sb-s" data-cap="cadence budget">
+    <div class="sb-s" data-cap="cadence budget triage">
       <div class="sb-div"></div>
       <div class="sb-l">Operación del área</div>
+      <a class="ni" data-nav="triage" data-cap="triage" onclick="nav('triage')"><i class="ti ti-route"></i><span class="ni-lbl">Triage de asuntos</span></a>
       <a class="ni" data-nav="cadence" data-cap="cadence" onclick="nav('cadence')"><i class="ti ti-repeat"></i><span class="ni-lbl">Cadencia de reuniones</span></a>
       <a class="ni" data-nav="budget" data-cap="budget" onclick="nav('budget')"><i class="ti ti-coin"></i><span class="ni-lbl">Presupuesto</span></a>
     </div>
@@ -227,6 +229,12 @@
     <!-- PROYECTOS ESTRATÉGICOS (dinámica) -->
     <section class="vw" id="v-projects"></section>
 
+    <!-- CALENDARIO REGULATORIO (dinámica) -->
+    <section class="vw" id="v-regcal"></section>
+
+    <!-- TRIAGE (dinámica) -->
+    <section class="vw" id="v-triage"></section>
+
     <!-- CADENCIA DE REUNIONES (dinámica) -->
     <section class="vw" id="v-cadence"></section>
 
@@ -267,11 +275,14 @@
   <a data-nav="admin" data-cap="admin" style="display:none" onclick="nav('admin')"><i class="ti ti-settings"></i>Admin</a>
 </nav>
 
-<script src="data.js?v=20260728b"></script>
-<script src="app.js?v=20260728b"></script>
-<script src="views.js?v=20260728b"></script>
-<script src="ops.js?v=20260728b"></script>
-<script src="authority.js?v=20260728b"></script>
-<script src="projects.js?v=20260728b"></script>
+<script src="data.js?v=20260817d"></script>
+<script src="app.js?v=20260817d"></script>
+<script src="views.js?v=20260817d"></script>
+<script src="ops.js?v=20260817d"></script>
+<script src="authority.js?v=20260817d"></script>
+<script src="projects.js?v=20260817d"></script>
+<script src="triage.js?v=20260817d"></script>
+<script src="regcal.js?v=20260817d"></script>
+<script src="clm.js?v=20260817d"></script>
 </body>
 </html>
